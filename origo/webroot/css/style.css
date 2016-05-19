@@ -1,0 +1,186 @@
+/**
+ * General elements
+ */
+ html {
+     overflow-y: scroll;
+ }
+
+body {
+    color: #333;
+    font-family: arial, sans-serif;
+}
+
+article {
+    display: block;
+    margin: 1em 0;
+}
+
+h1 {
+    font-size: 1.5em;
+}
+
+h2 {
+    font-size: 1.2em;
+}
+
+a {
+    text-decoration: none;
+}
+
+/**
+ * Layout of the main page elements
+ */
+#wrapper {
+    margin: 0 auto;
+    padding: 10px;
+    width: 980px;
+}
+
+/**
+ * Layout for header
+ */
+#header {
+    height: 150px;
+    background: url(../img/header/banner_large.jpg) no-repeat left 0;
+    position: relative;
+}
+
+/**
+ * Layout for navigation bar
+ */
+.navbar {
+    background: #b50000;
+}
+
+.navbar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar li {
+    display: inline-block;
+    position: relative; /* New - to place the drop-down menu correctly */
+}
+
+.navbar a {
+    color: #fff;
+    display: block;
+    margin-left: .5em;
+    padding: .5em;
+    text-decoration: none;
+    white-space: nowrap; /* New - to make the drop-down menu items stay on one row */
+}
+
+.navbar li a.selected-parent, /* New - to style the selected parent */
+.navbar a.selected {
+    color: #f5a06e;
+}
+
+.navbar li a:hover {
+    color: #f5a06e;
+}
+
+
+/* New - to style the submenu, start by hiding it using absolute positioning */
+.navbar ul ul {
+    background-color: #b50000;
+    padding: 8px;
+    position: absolute;
+    left: -9999px;
+    z-index: 2;
+}
+
+/* Display the submenu when hovering the list element, absolute positioning */
+.navbar li:hover ul {
+    left: 0;
+}
+
+/* New - style items of the submenu when hovering and selected */
+.navbar li li a:hover,
+.navbar li li a.selected {
+    color: #f5a06e;
+}
+
+
+/**
+ * Layout for main
+ */
+#main {
+    min-height: 20em;
+    padding: 0 1em;
+}
+
+
+/**
+ * Layout for footer
+ */
+#footer {
+    background: #b50000;
+    margin-top: 40px;
+    text-align: center;
+    overflow: auto;
+
+}
+
+.sitefooter {
+    display: block;
+    color: #fff;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.sitefooter a {
+    color: #fff;
+}
+
+.sitefooter a:visited {
+    color: #fff;
+}
+
+.sitefooter a:hover {
+    color: #ffa31a;
+}
+
+/**
+ * Responsive layout
+ */
+@media (max-width: 1050px) {
+    #wrapper {
+      width: auto;
+    }
+}
+
+@media (max-width: 930px) {
+    /* Layout for header */
+
+    .navbar ul {
+        background: #fff;
+    }
+
+    .navbar li {
+        display: block;
+    }
+
+    /* Navigation bar */
+    .navbar a {
+        background: #b50000;
+        border-radius: 7px;
+        margin-bottom: .3em;
+        margin-left: 0;
+        padding: .1em;
+        text-align: center;
+    }
+
+    .navbar ul ul {
+      background-color: #b50000;
+      padding: 0;
+      position:relative;
+      left: 0;
+      z-index: 0;
+    }
+
+    .navbar li ul {
+        background: #fff;
+    }
+}

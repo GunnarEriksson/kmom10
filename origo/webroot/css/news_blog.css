@@ -1,0 +1,123 @@
+/**
+ * General elements
+ */
+
+ .blogpost {
+     border: 1px solid #777;
+     border-radius: 2px;
+     margin-top: 10px;
+ }
+
+ .blogpost h2 {
+     background: #b50000;
+     margin: 0;
+     padding: 5px 0 5px 10px;
+ }
+
+ .blogpost h2 a {
+     color: #fff;
+     text-decoration: none;
+ }
+
+ .blogpost a:hover {
+    color: #f5a06e;
+ }
+
+ .blogpost p {
+     padding: 0 10px 0 10px;
+ }
+
+ .blogpost footer {
+     border-top: 1px solid #b50000;
+     margin-left: 10px;
+     margin-right: 10px;
+ }
+
+ .blogpost footer p {
+     margin: 5px 0;
+     overflow: auto;
+     padding: 0 5px;
+ }
+
+ .blogpost .float-left {
+     float: left;
+ }
+
+ .blogpost .float-right {
+     float: right;
+ }
+
+ .blogpost .blog-info {
+     display: inline-block;
+     font-size: .7em;
+     font-style: italic;
+ }
+
+ /**
+  * Navigation bar for pagination
+  */
+
+ .navigationBar {
+     background-color: #b50000;
+     padding: 5px 0;
+     width: 100%;
+ }
+
+ .navigationBar ul {
+     list-style: none;
+     margin: 0;
+ }
+
+ .navigationBar li {
+     display: inline;
+ }
+
+ .navigationBar a {
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+ .navigationBar .button {
+     border: 1.5px solid #fff;
+     border-radius: 5px;
+     color: #fff;
+     display: inline-block;
+     font-size: .8em;
+     margin-bottom: 1px;
+     margin-left: 8px;
+     margin-top: 1px;
+     padding: 5px;
+     text-align: center;
+ }
+
+ .navigationBar .backButtons {
+     display: inline-block;
+     float: left;
+     margin-left: 3px;
+     padding-left: 0;
+     text-align: left;
+ }
+
+ .navigationBar .forwardButtons {
+     display: inline-block;
+     float: right;
+     margin-right: 5px;
+     padding-left: 0;
+ }
+
+ .navigationBar .right-button {
+     border: 1.5px solid #fff;
+     border-radius: 5px;
+     color: #fff;
+     display: inline-block;
+     font-size: .8em;
+     margin-right: 8px;
+     padding: 5px;
+     text-align: center;
+ }
+
+ .navigationBar .pageNumbers {
+     padding-left: 0;
+     text-align: center;
+ }

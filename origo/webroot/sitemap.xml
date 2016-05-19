@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>http://www.student.bth.se/~guer16/dbwebb-kurser/oophp/me/kmom01/origo/webroot/me.php</loc>
+    <lastmod>2016-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://www.student.bth.se/~guer16/dbwebb-kurser/oophp/me/kmom01/origo/webroot/report.php</loc>
+    <lastmod>2016-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>http://www.student.bth.se/~guer16/dbwebb-kurser/oophp/me/kmom01/origo/webroot/source.php</loc>
+    <lastmod>2016-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+</urlset>

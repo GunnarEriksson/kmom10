@@ -1,0 +1,53 @@
+/**
+ * Game buttons
+ */
+.button {
+    list-style-type: none;
+    padding: 0;
+}
+
+.button > li {
+    background: #396a2f;
+    background: linear-gradient(#396a2f, #55a046);
+    border-radius: 7px;
+    display: inline-block;
+    margin-bottom: .3em;
+    padding: .1em;
+    text-align: center;
+    width: 6em;
+}
+
+.button > li > a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.button > li > a:hover {
+    color: #f5a06e;
+}
+
+/**
+ * CSS sprite for a dice with six faces.
+ */
+.dice {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.dice > li {
+    background: url(../img/dice/dice-faces.jpg) no-repeat;
+    border-radius: 5px;
+    display: inline-block;
+    height: 32px;
+    margin: 0 4px 0 0;
+    padding: 0;
+    width: 32px;
+}
+
+.dice > li.dice-1 { background-position: -160px 0; }
+.dice > li.dice-2 { background-position: -128px 0; }
+.dice > li.dice-3 { background-position:  -96px 0; }
+.dice > li.dice-4 { background-position:  -64px 0; }
+.dice > li.dice-5 { background-position:  -32px 0; }
+.dice > li.dice-6 { background-position:    0 0; }

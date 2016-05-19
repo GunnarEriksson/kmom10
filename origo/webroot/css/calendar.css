@@ -1,0 +1,94 @@
+/**
+ * General
+ */
+img {
+    height: auto;
+    margin: auto;
+    max-width: 100%;
+    width: auto;
+ }
+
+/**
+ * Header
+ */
+.calendar-header {
+    margin: 5px 0;
+    overflow: auto;
+}
+.calendar-header .calendar-date {
+    float: left;
+    margin: 15px 0;
+    text-align: center;
+    width: 90%;
+}
+
+.calendar-header a {
+    float: left;
+    height: 35px;
+    padding-top: 20px;
+    width: 5%;
+}
+
+.calendar-header a.text-align-right {
+    text-align: right;
+}
+
+/**
+ * Calendar
+ */
+.calendar-wrapper .calendar {
+    border-collapse: collapse;
+    margin-top: -5px;
+    padding: 0;
+    width: 100%;
+}
+
+.calendar th {
+    border: 1px solid #ccc;
+    font: .8em  Arial, sans-serif;
+    padding: 10px;
+}
+
+.calendar > thead > tr > th {
+    width: 13%;
+}
+
+.calendar > thead > tr > th:first-child {
+    width: 9%;
+}
+
+.calendar td {
+    border: 1px solid #ccc;
+    font-size: 1.1em;
+    padding-bottom: 30px;
+    padding-right: 15px;
+    padding-top: 11px;
+    text-align: right;
+    vertical-align:text-top;
+}
+
+.calendar > tbody > tr > td:first-child {
+    font-size: .7em;
+    padding: 0;
+    text-align: center;
+    vertical-align:middle;
+}
+
+.calendar > tbody > tr > td:last-child {
+    color: #FF0000;
+}
+
+.calendar td.other-month {
+    font-size: .8em;
+}
+
+
+/**
+ * Responsive layout
+ */
+@media (max-width: 600px) {
+    .calendar-wrapper .calendar {
+        display: block;
+        overflow-x: auto;
+    }
+}

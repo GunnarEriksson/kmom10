@@ -1,0 +1,58 @@
+label {
+    font-size: smaller;
+}
+
+input[type=text],
+input[type=password] {
+    font-size: 1.2em;
+    width: 500px;
+}
+
+input[type="submit"] {
+    background-color: #b50000;
+    color: #fff;
+    padding: .5em;
+    width: 6em;
+}
+
+input[type="submit"]:hover {
+    color: #f5a06e;
+}
+
+textarea {
+    font-size: 1.2em;
+    height: 200px;
+    width: 500px;
+}
+
+/**
+ * Movie search form
+ */
+.movie-search-form
+input[name=year1],
+input[name=year2] {
+    font-size: 1em;
+    width: 50px;
+}
+
+.movie-search-form
+input[name=title] {
+    font-size: 1em;
+    width: 250px;
+}
+
+/**
+ * Administrate movies
+ */
+.movie-admin-form
+ button[type="button"] {
+     background-color: #b50000;
+     color: #fff;
+     padding: .5em;
+     width: 10em;
+ }
+
+ .movie-admin-form
+  button[type="button"]:hover {
+     color: #f5a06e;
+ }

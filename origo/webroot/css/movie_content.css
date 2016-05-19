@@ -1,0 +1,49 @@
+.movie-info-container {
+    overflow: auto;
+}
+
+.movie-info-table {
+    clear: both;
+    margin-top: 2em;
+    text-align: center;
+    width: 100%;
+}
+
+.movie-info-img {
+    float: left;
+}
+
+.movie-plot {
+    display: table-cell;
+    padding: .2em 1em .5em 1em;
+}
+
+.genres {
+    list-style-type: none;
+    padding: 0;
+}
+
+.genres li {
+    background: #b50000;
+    border-radius: 5px;
+    display: inline-block;
+    margin-bottom: .3em;
+    margin-left: .3em;
+    padding: .1em;
+    text-align: center;
+    width: 6em;
+}
+
+.genres li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.genres li a:hover {
+    color: #f5a06e;
+}
+
+.movie-admin-button {
+    float: right;
+    margin-right: 20px;
+}

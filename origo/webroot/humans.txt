@@ -1,0 +1,3 @@
+Origo is a PHP-boilerplate/framework for small websites. Origo was built by
+Gunnar Eriksson as part of learning web programming-
+It was also published at GitHub: https://github.com/GunnarEriksson/origo.
