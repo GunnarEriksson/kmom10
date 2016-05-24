@@ -23,17 +23,46 @@ class Content
      * Sends two requests to the data base to reset the database to the
      * default values.
      *
-     * @return boolean true if the reset of db was successful, false otherwise.
+     * @return string the result of setting the database to the default values.
      */
-    public function resetContent()
+    public function resetContentInDb()
     {
-        $this->dropContentTableIfExists();
-        $res = $this->createContentTable();
-        if ($res) {
-            $res = $this->setContentDefaultValues();
+        if ($this->isAdminMode()) {
+            $message = "Databasen kunde EJ återställas till dess grundvärden";
+
+            $this->dropContentTableIfExists();
+            $res = $this->createContentTable();
+            if ($res) {
+                $res = $this->setContentDefaultValues();
+                if ($res) {
+                    $message = "Databas återställd till dess grundvärden";
+                }
+            }
+        } else {
+            $message = "Du måste vara inloggad som admin för att kunna sätta databasen till dess grundvärden!";
         }
 
-        return $res;
+        return $message;
+    }
+
+    /**
+     * Helper function to check if the status is admin mode.
+     *
+     * Checks if the user has checked in as admin.
+     *
+     * @return boolean true if as user is checked in as admin, false otherwise.
+     */
+    private function isAdminMode()
+    {
+        $isAdminMode = false;
+        $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
+        if (isset($acronym)) {
+            if (strcmp ($acronym , 'admin') === 0) {
+                $isAdminMode = true;
+            }
+        }
+
+        return $isAdminMode;
     }
 
     /**
@@ -46,7 +75,7 @@ class Content
      */
     private function dropContentTableIfExists()
     {
-        $sql = 'DROP TABLE IF EXISTS Content;';
+        $sql = 'DROP TABLE IF EXISTS Rm_Content;';
 
         $this->db->executeQuery($sql);
     }
@@ -61,7 +90,7 @@ class Content
     private function createContentTable()
     {
         $sql = '
-            CREATE TABLE Content
+            CREATE TABLE Rm_Content
             (
                 id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
                 slug CHAR(80) UNIQUE,
@@ -72,6 +101,7 @@ class Content
                 data TEXT,
                 filter CHAR(80),
                 author CHAR(80),
+                category CHAR(20),
 
                 published DATETIME,
                 created DATETIME,
@@ -95,13 +125,15 @@ class Content
     private function setContentDefaultValues()
     {
         $sql = <<<EOD
-            INSERT INTO Content (slug, url, type, title, data, filter, published, created) VALUES
-            ('hem', 'hem', 'page', 'Hem', "Detta är min hemsida. Den är skriven i [url=http://en.wikipedia.org/wiki/BBCode]bbcode[/url] vilket innebär att man kan formattera texten till [b]bold[/b] och [i]kursiv stil[/i] samt hantera länkar.\n\nDessutom finns ett filter 'nl2br' som lägger in <br>-element istället för \\n, det är smidigt, man kan skriva texten precis som man tänker sig att den skall visas, med radbrytningar.", 'bbcode,nl2br', NOW(), NOW()),
-            ('om', 'om', 'page', 'Om', "Detta är en sida om mig och min webbplats. Den är skriven i [Markdown](http://en.wikipedia.org/wiki/Markdown). Markdown innebär att du får bra kontroll över innehållet i din sida, du kan formattera och sätta rubriker, men du behöver inte bry dig om HTML.\n\nRubrik nivå 2\n-------------\n\nDu skriver enkla styrtecken för att formattera texten som **fetstil** och *kursiv*. Det finns ett speciellt sätt att länka, skapa tabeller och så vidare.\n\n###Rubrik nivå 3\n\nNär man skriver i markdown så blir det läsbart även som textfil och det är lite av tanken med markdown.", 'markdown', NOW(), NOW()),
-            ('blogpost-1', NULL, 'post', 'Välkommen till min blogg!', "Detta är en bloggpost.\n\nNär det finns länkar till andra webbplatser så kommer de länkarna att bli klickbara.\n\nhttp://dbwebb.se är ett exempel på en länk som blir klickbar.", 'clickable,nl2br', NOW(), NOW()),
-            ('blogpost-2', NULL, 'post', 'Nu har sommaren kommit', "Detta är en bloggpost som berättar att sommaren har kommit, ett budskap som kräver en bloggpost.", 'nl2br', NOW(), NOW()),
-            ('blogpost-3', NULL, 'post', 'Nu har hösten kommit', "Detta är en bloggpost som berättar att hösten har kommit, ett budskap som kräver en bloggpost", 'nl2br', NOW(), NOW());
-        ;
+            INSERT INTO Rm_Content (slug, url, type, title, data, filter, author, category, published, created) VALUES
+                ('blogpost-1', NULL, 'post', 'Ny hemsida klar', "Vi är glada att kunna meddela att Rental Movies nya hemsida är klar.\n\nVi hoppas att ni finner den bättre än vår gamla hemsida och gör det enklare för er att hitta de filmer som ni vill se. Nytt är också en nyhetssida där ni kan ta del av olika nyheter, erbjudanden och övrig information.\n\nÄr ni medlem hos oss, så kan ni själva skriva egna meddelanden under nyheter.\n\nVälkommen till oss önskar personalen på Rental Movies.", 'nl2br', 'admin', 'information', '2016-05-16 14:35:29', '2016-05-16 14:35:29'),
+                ('blogpost-2', NULL, 'post', 'Vi firar Rental Movies nya hemsida', "För att fira vår nya hemsida så kommer vi att erbjuda alla medlemmar 20% rabatt på alla filmer under två veckor. Vi kommer också under de här två veckorna komma ut med ett specialerbjudande varje dag. Vi rekommenderar därför att du tittar in på vår hemsida för att ta del av dessa erbjudanden\n\nVänliga hälsningar\nPersonalen på Rental Movies", 'nl2br', 'admin', 'erbjudande', '2016-05-16 15:25:20', '2016-05-16 15:25:20'),
+                ('blogpost-3', NULL, 'post', 'Djungelboken är äntligen här', "Nu kan du se Djungelboken hos oss på Rental Movies.\n\nFilmen är baserad på boken av Rudyard Kipling och handlar om en föräldralös pojke växer upp i djungeln och uppfostras av vargar, björnar och en svart panter.\n\nFilmen är inspelad med den senaste tekniken där man blandar riktiga skådespelare med datoranimerad grafik och får det att se naturligt ut, vilket har varit ett problem förr. Så missa inte den här filmen som är både för små som stora filmälskare.\n\nVänliga hälsningar\nPersonalen på Rental Movies", 'nl2br', 'admin', 'nyhet', '2016-05-17 11:05:19', '2016-05-17 11:05:19'),
+                ('blogpost-4', NULL, 'post', 'Sommarerbjudande', "Vi önskar alla medlemmar en riktigt skön sommar, men tyvärr kan vi inte bestämma över vädret. Vi vill därför på Rental Movies vill erbjuda alla medlemmar 15% rabatt på alla filmer under juli månad. Förhoppningsvis kan en film göra väntan på solen lite kortare. Erbjudandet gäller naturligtvis även om det är dagar under juli med strålande solsken. Film kan man titta på oavsett vädret.\n\nSköna sommarhälsningar\n\Personalen på Rental Movies", 'nl2br', 'admin', 'erbjudande', '2016-05-17 13:35:41', '2016-05-17 13:35:41'),
+                ('blogpost-5', NULL, 'post', 'Filmkalender', "Vi vill meddela att på Rental Movies hemsida finns nu en filmkalender.\n\nVarje månad har en månadens film som vi erbjuder 15% rabatt om du vill se filmen under den månaden. Kalendern hittar du under rubriken kalender i våran meny.\n\nVänliga hälsningar\nPersonalen på Rental Movies", 'nl2br', 'admin', 'information', '2016-05-19 12:43:37', '2016-05-19 12:43:37'),
+                ('blogpost-6', NULL, 'post', 'Testar nyhetsbloggen', "Vill bara testa nyhetsbloggen där alla medlemmar kan lägga in meddelanden. Nu när jag ändå är här så kan jag rekommendera en film, nämligen Eye in the sky. En grymt spännande film för er som gillar drama och thriller. Det blir inte sämre att Helen Mirren är med i filmen, som jag tycker är en grymt bra skådespelare.\n\nThomas", 'nl2br', 'tompa', 'övrigt', '2016-05-20 14:15:22', '2016-05-20 14:15:22'),
+                ('blogpost-7', NULL, 'post', 'Spela tärning och möjlighet till gratis film', "Tycker du om att spela spel? Då kan vårt tärningsspel vara någonting för dig. Tärningsspelet heter tärningsspel 100 och den medlem som har högstpoäng vid månadens slut får se en film gratis hos oss på Rental Movies. Tabellen rensas därefter och så kan ett nytt spel börja.\n\nVänliga hälsningar\nPersonalen på Rental Movies", 'nl2br', 'admin', 'nyhet', '2016-05-20 15:11:59', '2016-05-20 15:11:59')
+            ;
 EOD;
 
         return $this->db->executeQuery($sql);
@@ -125,9 +157,16 @@ EOD;
             $params[2] = null; // Set url to null for blog posts.
         }
 
+        // Convert filters from array to string
+        if (!empty($params[5])) {
+            $params[5] = implode(",", $params[5]);
+        }
+
+        $params[8] = $this->addTimeStampToDate($params[8]);
+
         $sql = '
-            INSERT INTO Content (title, slug, url, data, type, filter, author, published, created, updated)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NULL);
+            INSERT INTO Rm_Content (title, slug, url, data, type, filter, author, category, published, created, updated)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NULL);
         ';
 
         $res = $this->db->ExecuteQuery($sql, $params);
@@ -139,6 +178,18 @@ EOD;
         }
 
         return $output;
+    }
+
+    private function addTimeStampToDate($date)
+    {
+        if (strlen($date) > 0 && strlen($date) < 11) {
+            $date = substr($date, 0, 10); // Get date.
+            $date .= " ";
+            date_default_timezone_set('Europe/Stockholm');
+            $date .= date("H:i:s");
+        }
+
+        return $date;
     }
 
     /**
@@ -166,10 +217,10 @@ EOD;
      * @param  [] $params the array of content values.
      * @return string the result of updating a specific content.
      */
-    public function updateContent($params)
+    public function updateContentInDb($params)
     {
         $sql = '
-            UPDATE Content SET
+            UPDATE Rm_Content SET
                 title   = ?,
                 slug    = ?,
                 url     = ?,
@@ -177,11 +228,28 @@ EOD;
                 type    = ?,
                 filter  = ?,
                 author  = ?,
+                category = ?,
                 published = ?,
-                updated = NOW()
+                updated = NOW(),
+                deleted = ?
             WHERE
                 id = ?
         ';
+
+        // Slugify title
+        $params[1] = $this->slugify($params[0]);
+
+        // Convert filters from array to string
+        if (!empty($params[5])) {
+            $params[5] = implode(",", $params[5]);
+        }
+
+        // Add time stamp to published if missing.
+        // Set deleted to null if the deleted post is published again.
+        if (isset($params[8])) {
+            $params[8] = $this->addTimeStampToDate($params[8]);
+            $params[9] = null;
+        }
 
         $res = $this->db->ExecuteQuery($sql, $params);
 
@@ -205,7 +273,7 @@ EOD;
      */
     public function selectContent($id)
     {
-        $sql = 'SELECT * FROM Content WHERE id = ?';
+        $sql = 'SELECT * FROM Rm_Content WHERE id = ?';
         $res = $this->db->ExecuteSelectQueryAndFetchAll($sql, $id);
 
         return $res[0];
@@ -226,7 +294,7 @@ EOD;
     public function deleteContent($params)
     {
         $sql = '
-            UPDATE Content SET
+            UPDATE Rm_Content SET
                 title   = ?,
                 slug    = ?,
                 url     = ?,
@@ -234,6 +302,7 @@ EOD;
                 type    = ?,
                 filter  = ?,
                 author  = ?,
+                category = ?,
                 published = NULL,
                 updated = ?,
                 deleted = NOW()
@@ -280,7 +349,7 @@ EOD;
      */
     private function prepareContentListSqlQury()
     {
-        $sql = 'SELECT *, (published <= NOW()) AS available FROM Content';
+        $sql = 'SELECT *, (published <= NOW()) AS available FROM Rm_Content';
 
         return $sql;
     }
@@ -359,6 +428,23 @@ EOD;
 EOD;
 
         return $html;
+    }
+
+    public function eraseContent($params)
+    {
+        $sql = '
+            DELETE FROM Rm_Content WHERE id = ?;
+        ';
+
+        $res = $this->db->ExecuteQuery($sql, $params);
+
+        if ($res) {
+            $message = 'Nyheten är bortagen från databas och kan ej återskapas!';
+        } else {
+            $message = 'Nyheten kunde EJ tas bort från databas!';
+        }
+
+        return $message;
     }
 
 

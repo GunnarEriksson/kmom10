@@ -21,6 +21,9 @@ $price = isset($_POST['price']) ? $_POST['price'] : null;
 $imdb = isset($_POST['imdb']) ? $_POST['imdb'] : null;
 $youtube = isset($_POST['youtube']) ? $_POST['youtube'] : null;
 $plot   = isset($_POST['plot'])  ? $_POST['plot'] : null;
+$published = isset($_POST['published'])  ? $_POST['published'] : null;
+$rented = isset($_POST['rented'])  ? $_POST['rented'] : null;
+$rents = isset($_POST['rents'])  ? $_POST['rents'] : null;
 $genre   = isset($_POST['genre'])  ? $_POST['genre'] : null;
 $save   = isset($_POST['save'])  ? true : false;
 $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
@@ -34,7 +37,7 @@ $db = new Database($origo['database']);
 if (isset($acronym) && (strcmp($acronym , 'admin') === 0)) {
     if ($save) {
         $movieContent = new MovieContent($db);
-        $params = array($title, $director, $length, $year, $plot, $image, $subtext, $speech, $quality, $format, $price, $imdb, $youtube, $id);
+        $params = array($title, $director, $length, $year, $plot, $image, $subtext, $speech, $quality, $format, $price, $imdb, $youtube, $published, $rented, $rents, $id);
         $message = $movieContent->editFilmInDb($params, $genre);
     }
 

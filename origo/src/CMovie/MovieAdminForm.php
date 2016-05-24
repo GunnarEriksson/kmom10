@@ -1,6 +1,6 @@
 <?php
 /**
- * Movie admin, provides movie administration forms to be able to administrate
+ * Movie admin form, provides movie administration forms to be able to administrate
  * movies in the database. Supports reset database to a default value, add a
  * new film to database, edit a film in database and delete a film from
  * database.
@@ -147,6 +147,9 @@ EOD;
             <fieldset>
                 <legend>{$title}</legend>
                 <input type='hidden' name='id' value="{$params['id']}"/>
+                <input type='hidden' name='published' value="{$params['published']}"/>
+                <input type='hidden' name='rented' value="{$params['rented']}"/>
+                <input type='hidden' name='rents' value="{$params['rents']}"/>
                 <p><label>Titel:<br/><input type='text' name='title' value="{$params['title']}"/></label></p>
                 <p><label>Regissör:<br/><input type='text' name='director' value="{$params['director']}"/></label></p>
                 <p><label>Längd:<br/><input type='text' name='length' value="{$params['length']}"/></label></p>
@@ -309,6 +312,9 @@ EOD;
                 'price' => htmlentities($param->price, null, 'UTF-8'),
                 'imdb' => htmlentities($param->imdb, null, 'UTF-8'),
                 'youtube' => htmlentities($param->youtube, null, 'UTF-8'),
+                'published' => htmlentities($param->published, null, 'UTF-8'),
+                'rented' => htmlentities($param->rented, null, 'UTF-8'),
+                'rents' => htmlentities($param->rents, null, 'UTF-8'),
                 'genre' => htmlentities($param->genre, null, 'UTF-8')
             );
         }

@@ -1,6 +1,6 @@
 <?php
 /**
- * This is a Origo pagecontroller to reset the content for movies.
+ * This is a Origo pagecontroller to reset the content for news blog posts
  *
  * Contains reports of each section of the course OOPHP.
  */
@@ -11,20 +11,20 @@ $reset = isset($_POST['reset']) ? true : false;
 $message = null;
 if ($reset) {
     $db = new Database($origo['database']);
-    $movieContent = new MovieContent($db);
-    $message = $movieContent->resetContent();
+    $content = new Content($db);
+    $message = $content->resetContentInDb();
     $origo['debug'] = $db->Dump();
 }
 
-$movieAdminForm = new MovieAdminForm();
+$blogAdminForm = new BlogAdminForm();
 
 
-$origo['title'] = "Återställ databasen för filmer";
+$origo['title'] = "Återställ databasen för nyheter";
 $origo['stylesheets'][] = 'css/form.css';
 
 $origo['main'] = <<<EOD
 <h1>{$origo['title']}</h1>
-{$movieAdminForm->createResetMovieDbForm($origo['title'], $message)}
+{$blogAdminForm->createResetNewsBlogsDbForm($origo['title'], $message)}
 EOD;
 
 // Finally, leave it all to the rendering phase of Origo.

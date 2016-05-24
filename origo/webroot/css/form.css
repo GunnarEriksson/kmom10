@@ -41,18 +41,27 @@ input[name=title] {
     width: 250px;
 }
 
+
 /**
- * Administrate movies
+ * Administrate
  */
-.movie-admin-form
- button[type="button"] {
+.news-blogs-admin-form button[type="button"],
+.movie-admin-form button[type="button"] {
      background-color: #b50000;
      color: #fff;
      padding: .5em;
      width: 10em;
  }
 
- .movie-admin-form
-  button[type="button"]:hover {
+.news-blogs-admin-form  button[type="button"]:hover,
+.movie-admin-form button[type="button"]:hover {
      color: #f5a06e;
  }
+
+ /**
+  * News blog post form
+  */
+  input[name="published"] {
+      font-size: 1em;
+      width: 140px;
+  }

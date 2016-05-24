@@ -107,7 +107,7 @@ class MovieSearch
         $html .= '<label><input type="text" name="year2" value="'. $year2 . '"/></label></p>';
         $html .= '<p><label>Genre: </label></p>';
         $html .= "<ul class='genres'><li><a href='?title={$title}&year1={$year1}&year2={$year2}&genre='>Alla</a></li>";
-        $res = $this->getAllGeneres();
+        $res = $this->getAllGenres();
         foreach ($res as $key => $row) {
             $genre = htmlentities($row->name);
             if (strcmp($this->parameters['genre'], $genre) === 0) {
@@ -126,15 +126,15 @@ class MovieSearch
     }
 
     /**
-     * Helper function to get all genres for the films.
+     * Gets all connected genres for the movies.
      *
-     * Gets only the genres that are connected to the films, which can be a
+     * Gets only the genres that are connected to the movies, which can be a
      * part of all available genres if all available genres is not used by
-     * the films in the database.
+     * the movies in the database.
      *
-     * @return [] All genres used by the films in database.
+     * @return [] All genres used by the movies in database.
      */
-    private function getAllGeneres()
+    public function getAllGenres()
     {
         $sql = '
             SELECT DISTINCT G.name

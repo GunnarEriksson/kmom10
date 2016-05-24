@@ -117,6 +117,7 @@ a {
  */
 #footer {
     background: #b50000;
+    clear: both;
     margin-top: 40px;
     text-align: center;
     overflow: auto;

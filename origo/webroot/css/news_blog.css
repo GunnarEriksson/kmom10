@@ -1,5 +1,54 @@
 /**
- * General elements
+ * Category form
+ */
+
+.news-blog-category-form {
+    margin-bottom: 10px;
+}
+
+ .categories {
+     list-style-type: none;
+     margin: 0 5px;
+     padding: 0;
+ }
+
+ .categories li {
+     background: #b50000;
+     border-radius: 5px;
+     display: inline-block;
+     margin-bottom: .3em;
+     margin-left: .3em;
+     padding: .1em;
+     text-align: center;
+     width: 6em;
+ }
+
+ .categories li a {
+     color: #fff;
+     text-decoration: none;
+ }
+
+ .categories li a:hover {
+     color: #f5a06e;
+ }
+
+/**
+ * Table hits
+ */
+ .selected {
+     color: #f5a06e;
+ }
+
+.news-blog-table {
+    overflow: auto;
+}
+
+.news-blog-table .table-hits {
+    float: right;
+}
+
+/**
+ * Blog posts
  */
 
  .blogpost {
@@ -91,6 +140,10 @@
      text-align: center;
  }
 
+ .navigationBar .button:hover {
+     color: #f5a06e;
+ }
+
  .navigationBar .backButtons {
      display: inline-block;
      float: left;
@@ -117,7 +170,25 @@
      text-align: center;
  }
 
+ .navigationBar .right-button:hover {
+     color: #f5a06e;
+ }
+
  .navigationBar .pageNumbers {
      padding-left: 0;
      text-align: center;
  }
+
+ .navigationBar .pageNumbers .selected {
+     background: #fff;
+     color: #f5a06e;
+ }
+
+ /**
+  * Administratrations
+  */
+ .news-blog-admin-button {
+     float: right;
+     margin-right: 20px;
+     margin-top: 4px;
+}

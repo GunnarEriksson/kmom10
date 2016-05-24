@@ -60,30 +60,54 @@ class MovieContent
      */
     public function resetContent()
     {
-        $message = "Kunde ej återställa filmdatabasen till dess grundvärden";
-        $this->dropContentTablesIfExists();
+        if ($this->isAdminMode()) {
+            $message = "Kunde EJ återställa filmdatabasen till dess grundvärden";
+            $this->dropContentTablesIfExists();
 
-        $res = $this->createMovieTable();
-        if ($res) {
-            $res = $this->setMovieDefaultValues();
+            $res = $this->createMovieTable();
             if ($res) {
-                $res = $this->createNovieGeneresTable();
+                $res = $this->setMovieDefaultValues();
                 if ($res) {
-                    $res = $this->setMovieGeneresDefaultValues();
+                    $res = $this->createNovieGeneresTable();
                     if ($res) {
-                        $res = $this->createMovieToGenreTable();
+                        $res = $this->setMovieGeneresDefaultValues();
                         if ($res) {
-                            $res = $this->setMovieToGenreDefaultValues();
+                            $res = $this->createMovieToGenreTable();
                             if ($res) {
-                                $message = "Filmdatabas återställd till dess grundvärden";
+                                $res = $this->setMovieToGenreDefaultValues();
+                                if ($res) {
+                                    $message = "Filmdatabas återställd till dess grundvärden";
+                                }
                             }
                         }
                     }
                 }
             }
+        } else {
+            $message = "Du måste vara inloggad som admin för att kunna sätta databasen till dess grundvärden!";
         }
 
         return $message;
+    }
+
+    /**
+     * Helper function to check if the status is admin mode.
+     *
+     * Checks if the user has checked in as admin.
+     *
+     * @return boolean true if as user is checked in as admin, false otherwise.
+     */
+    private function isAdminMode()
+    {
+        $isAdminMode = false;
+        $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
+        if (isset($acronym)) {
+            if (strcmp ($acronym , 'admin') === 0) {
+                $isAdminMode = true;
+            }
+        }
+
+        return $isAdminMode;
     }
 
     /**
@@ -135,7 +159,10 @@ class MovieContent
                 format CHAR(4) DEFAULT NULL, -- mp4, divx, etc
                 price INT DEFAULT NULL,
                 imdb VARCHAR(100) DEFAULT NULL,
-                youtube VARCHAR(100) DEFAULT NULL
+                youtube VARCHAR(100) DEFAULT NULL,
+                published DATETIME,
+                rented DATETIME,
+                rents INT DEFAULT NULL
             ) ENGINE INNODB CHARACTER SET utf8;
         ';
 
@@ -153,20 +180,20 @@ class MovieContent
     private function setMovieDefaultValues()
     {
         $sql = <<<EOD
-            INSERT INTO Rm_Movie (title, director, length, year, plot, image, subtext, speech, format, price, imdb, youtube) VALUES
-            ('Our kind of traitor', 'Susanna White', 107, 2015, 'Ett ungt engelskt par möter en gåtfull rysk affärsman under semestern. Vad de inte vet är att han är en penningtvättare, som försöker hoppa av till den brittiska underrättelsetjänsten innan hans fiender finner och dödar honom ? och han har valt dem som sin livlina. Helt plötsligt är paret indragna i en dödlig jakt, som tar dem från Marrakech till London och Paris, och slutligen till de schweiziska alperna.', 'movie/our_kind_of_traitor.jpg', 'sve', 'eng', 'DivX', 39, 'http://www.imdb.com/title/tt1995390/', 'https://www.youtube.com/watch?v=N5k4FBGtbMs'),
-            ('Now You See Me 2', 'Jon M. Chu', 115, 2016, 'De fyra magikerkompanjonerna (Jesse Eisenberg, Woody Harrelson, Dave Franco, Lizzy Caplan) återvänder för ett andra sinnesförvrängande äventyr, där de flyttar gränserna för illusionistkonst på scen till nya höjder runt om i världen. Ett år efter att de lurat FBI och vann allmänhetens kärlek med sina Robin Hood-aktiga konster, dyker illusionisterna upp igen för ett comeback-uppträdande i syfte att avslöja oetiska metoder som en tech-magnat ägnar sig åt.', 'movie/now_you_see_me2.jpg', 'sve', 'eng', 'DivX', 35, ': http://www.imdb.com/title/tt3110958/', 'https://www.youtube.com/watch?v=4I8rVcSQbic'),
-            ('Neon Demon', 'Nicolas Winding Refn', 110, 2016, 'Jesse är en ung lovande modell som flyttar till Los Angeles i sitt sökande efter framgång. Där hamnar hon snart i klorna på en grupp kvinnor, vars besatthet av skönhet gör dem beredda att ta till alla medel för att komma åt hennes ungdom och vitalitet.', 'movie/neon_demon.jpg', 'sve', 'eng', 'DivX', 49, 'http://www.imdb.com/title/tt1974419/', 'https://www.youtube.com/watch?v=cipOTUO0CmU'),
-            ('Bastille Day', 'James Watkins', 92, 2016, 'Michael Mason, en amerikansk ficktjuv bosatt i Paris, själ en väska som visar sig innehålla mer än bara en plånbok. Plötsligt har CIA tagit upp jakten på honom, men CIA-agenten Sean Briar inser snart att Michael bara är en bricka i ett mycket större spel och deras bästa tillgång för att avslöja en storskalig konspiration. Mot sina befäls order, rekryterar Briar Michael för att hjälpa till att spåra källan till korruption. Under ett gastkramande dygn upptäcker de att de båda två är måltavlor som måste våga lita på varandra för att kunna förgöra fienden.', 'movie/bastille_day.jpg', 'sve', 'eng', 'DivX', 39, 'http://www.imdb.com/title/tt2368619/', 'https://www.youtube.com/watch?v=U5R0bI8EJCQ'),
-            ('Djungelboken', 'Jon Faveau', 105, 2016, 'En föräldralös pojke växer upp i djungeln och uppfostras av vargar, björnar och en svart panter. Efter den klassiska sagan skriven av Rudyard Kipling.', 'movie/djungelboken.jpg', 'sve', 'sve', 'DivX', 39, 'http://www.imdb.com/title/tt3040964/', 'https://www.youtube.com/watch?v=2eJImFQzti0'),
-            ('Dottern', 'Simon Stone', 96, 2015, 'Christian återvänder hem för första gången på femton år för att hans far ska gifta sig. Väl hemma återförenas han också med sin gamla vän Oliver och spenderar en del tid med hans familj. Christians besök blir dock inte bara en kär återförening, det drar också fram flera gamla familjehemligheter i ljuset.', 'movie/dottern.jpg', 'sve', 'eng', 'DivX', 39, 'http://www.imdb.com/title/tt3922816/', 'https://www.youtube.com/watch?v=pSse2RIapEA'),
-            ('Eye in the sky', 'Gavin Hood', 102, 2015, 'Överste Katherine Powell leder ett hemligt drönaruppdrag, från högkvarteret i England, med mål att fånga en ökänd terroristgrupp som gömmer sig i Nairobi, Kenya. När hon och hennes team upptäcker att terroristerna planerar att utföra en självmordsattack, ändras ordern snabbt från "tillfångata" till "döda". Precis när man ska inleda den dödliga attacken mot terroristernas näste upptäcker piloten en lekande nioårig flicka precis vid huset, och man ställs inför ett svårt val.', 'movie/eye_in_the_sky.jpg', 'sve', 'eng', 'DivX', 42, 'http://www.imdb.com/title/tt2057392/', 'https://www.youtube.com/watch?v=PxpX8-efsZI'),
-            ('Flickan mamman och demonerna', 'Suzanne Osten', 90, 2016, 'I en lägenhet låser Siri, en ensamstående och psykotisk mamma, in sig själv tillsammans med sin dotter. Här är det nämligen demonerna som styr. Ti kan höra mamman när hon pratar med demonerna, hon ser mammans förändrade och slutna ansikte. Men demonerna som mamman talar med, kan Ti vare sig höra eller se. Situationen blir farlig när demonerna tar över hela Siris värld. Livsfarlig, faktiskt. Siri är inte Siri längre. Det är som att hon själv har förvandlats till en demon. Så för att överleva tar Ti till sin fantasi och beslutar sig för att besegra mammans demoner. ', 'movie/flickan_mamman_och_demonerna.jpg', 'sve', 'sve', 'DivX', 44, 'http://www.imdb.com/title/tt4841464/', 'https://www.youtube.com/watch?v=RzCpF4VSQBo'),
-            ('Hermelinen', 'Christian Vincent', 98, 2016, 'Michael är en ökänt hård domare som sällan dömer någon till lägre straff än 10 år. En dag förändras allt när han återser Ditte som kommer in på jurytjänst. Sex år tidigare träffade Michel Ditte när han låg på sjukhuset och hon var narkosläkare. Michael förälskade sig i Ditte och hon var kanske den enda kvinna han någon förälskat sig i.', 'movie/hermelinen.jpg', 'sve', 'fre', 'DivX', 44, 'http://www.imdb.com/title/tt4216908/', 'https://www.youtube.com/watch?v=QRxyQjDnuxs'),
-            ('Mothers day', 'Garry Marshall', 118, 2016, 'Det är bara några dagar kvar till Mors dag och Sandy, Miranda, Jesse och Bradley planerar på skilda håll hur de ska tillbringa dagen: med en ny kärlek, en förlorad kärlek - eller ingen kärlek alls. Oavsett vilket kommer detta bli en Mors Dag att minnas...', 'movie/mothers_day.jpg', 'sve', 'eng', 'DivX', 49, 'http://www.imdb.com/title/tt4824302/', 'https://www.youtube.com/watch?v=2BPr217zLps'),
-            ('Paddington', 'Paul King', 118, 2014, 'Paddington har vuxit upp djupt i den peruanska djungeln med sin moster Lucy som, inspirerad av ett möte med en engelsk upptäcktsresande, har fått sin brorson att drömma om ett spännande liv i London. När en jordbävning förstör deras hem bestämmer sig Lucy för att smuggla sin unge brorson ombord på en båt på väg till England, på jakt efter ett bättre liv.', 'movie/paddington.jpg', 'sve', 'sve', 'DivX', 39, 'http://www.imdb.com/title/tt1109624/', 'https://www.youtube.com/watch?v=CxeBdrGGU8U'),
-            ('The Intern', 'Nancy Mayers', 121, 2015, 'Den 70-åriga änklingen Ben har tröttnat på livet som pensionär och ger sig in i leken igen genom en praktikplats på en nätbutik för mode som drivs av karriäristan Jules.  Oscar-belönade Robert De Niro och Anne Hathaway har huvudrollerna i höstens stora romantiska komedi The Intern i regi av Oscar-nominerade Nancy Meyers.', 'movie/the_intern.jpg', 'sve', 'eng', 'DivX', 42, 'http://www.imdb.com/title/tt2361509/', 'https://www.youtube.com/watch?v=W-DEy3mylCs')
-        ;
+            INSERT INTO Rm_Movie (title, director, length, year, plot, image, subtext, speech, format, price, imdb, youtube, published, rented, rents) VALUES
+            ('Our kind of traitor', 'Susanna White', 107, 2015, 'Ett ungt engelskt par möter en gåtfull rysk affärsman under semestern. Vad de inte vet är att han är en penningtvättare, som försöker hoppa av till den brittiska underrättelsetjänsten innan hans fiender finner och dödar honom ? och han har valt dem som sin livlina. Helt plötsligt är paret indragna i en dödlig jakt, som tar dem från Marrakech till London och Paris, och slutligen till de schweiziska alperna.', 'movie/our_kind_of_traitor.jpg', 'sve', 'eng', 'DivX', 39, 'http://www.imdb.com/title/tt1995390/', 'https://www.youtube.com/watch?v=N5k4FBGtbMs', '2016-05-20 12:35:29', '2016-05-23 11:35:29', 15),
+                ('Now You See Me 2', 'Jon M. Chu', 115, 2016, 'De fyra magikerkompanjonerna (Jesse Eisenberg, Woody Harrelson, Dave Franco, Lizzy Caplan) återvänder för ett andra sinnesförvrängande äventyr, där de flyttar gränserna för illusionistkonst på scen till nya höjder runt om i världen. Ett år efter att de lurat FBI och vann allmänhetens kärlek med sina Robin Hood-aktiga konster, dyker illusionisterna upp igen för ett comeback-uppträdande i syfte att avslöja oetiska metoder som en tech-magnat ägnar sig åt.', 'movie/now_you_see_me2.jpg', 'sve', 'eng', 'DivX', 35, ': http://www.imdb.com/title/tt3110958/', 'https://www.youtube.com/watch?v=4I8rVcSQbic', '2016-05-15 16:25:21', '2016-05-23 14:35:29', 31),
+                ('Neon Demon', 'Nicolas Winding Refn', 110, 2016, 'Jesse är en ung lovande modell som flyttar till Los Angeles i sitt sökande efter framgång. Där hamnar hon snart i klorna på en grupp kvinnor, vars besatthet av skönhet gör dem beredda att ta till alla medel för att komma åt hennes ungdom och vitalitet.', 'movie/neon_demon.jpg', 'sve', 'eng', 'DivX', 49, 'http://www.imdb.com/title/tt1974419/', 'https://www.youtube.com/watch?v=cipOTUO0CmU', '2016-05-10 14:35:29', '2016-05-22 22:15:49', 8),
+                ('Bastille Day', 'James Watkins', 92, 2016, 'Michael Mason, en amerikansk ficktjuv bosatt i Paris, själ en väska som visar sig innehålla mer än bara en plånbok. Plötsligt har CIA tagit upp jakten på honom, men CIA-agenten Sean Briar inser snart att Michael bara är en bricka i ett mycket större spel och deras bästa tillgång för att avslöja en storskalig konspiration. Mot sina befäls order, rekryterar Briar Michael för att hjälpa till att spåra källan till korruption. Under ett gastkramande dygn upptäcker de att de båda två är måltavlor som måste våga lita på varandra för att kunna förgöra fienden.', 'movie/bastille_day.jpg', 'sve', 'eng', 'DivX', 39, 'http://www.imdb.com/title/tt2368619/', 'https://www.youtube.com/watch?v=U5R0bI8EJCQ', '2016-04-22 10:32:19', '2016-05-21 11:30:21', 78),
+                ('Djungelboken', 'Jon Faveau', 105, 2016, 'En föräldralös pojke växer upp i djungeln och uppfostras av vargar, björnar och en svart panter. Efter den klassiska sagan skriven av Rudyard Kipling.', 'movie/djungelboken.jpg', 'sve', 'sve', 'DivX', 39, 'http://www.imdb.com/title/tt3040964/', 'https://www.youtube.com/watch?v=2eJImFQzti0', '2016-04-13 16:33:29', '2016-05-22 14:35:29', 56),
+                ('Dottern', 'Simon Stone', 96, 2015, 'Christian återvänder hem för första gången på femton år för att hans far ska gifta sig. Väl hemma återförenas han också med sin gamla vän Oliver och spenderar en del tid med hans familj. Christians besök blir dock inte bara en kär återförening, det drar också fram flera gamla familjehemligheter i ljuset.', 'movie/dottern.jpg', 'sve', 'eng', 'DivX', 39, 'http://www.imdb.com/title/tt3922816/', 'https://www.youtube.com/watch?v=pSse2RIapEA', '2016-05-23 10:55:29', '2016-05-23 14:35:29', 5),
+                ('Eye in the sky', 'Gavin Hood', 102, 2015, 'Överste Katherine Powell leder ett hemligt drönaruppdrag, från högkvarteret i England, med mål att fånga en ökänd terroristgrupp som gömmer sig i Nairobi, Kenya. När hon och hennes team upptäcker att terroristerna planerar att utföra en självmordsattack, ändras ordern snabbt från "tillfångata" till "döda". Precis när man ska inleda den dödliga attacken mot terroristernas näste upptäcker piloten en lekande nioårig flicka precis vid huset, och man ställs inför ett svårt val.', 'movie/eye_in_the_sky.jpg', 'sve', 'eng', 'DivX', 42, 'http://www.imdb.com/title/tt2057392/', 'https://www.youtube.com/watch?v=PxpX8-efsZI', '2016-02-16 19:15:39', '2016-05-20 12:35:29', 89),
+                ('Flickan mamman och demonerna', 'Suzanne Osten', 90, 2016, 'I en lägenhet låser Siri, en ensamstående och psykotisk mamma, in sig själv tillsammans med sin dotter. Här är det nämligen demonerna som styr. Ti kan höra mamman när hon pratar med demonerna, hon ser mammans förändrade och slutna ansikte. Men demonerna som mamman talar med, kan Ti vare sig höra eller se. Situationen blir farlig när demonerna tar över hela Siris värld. Livsfarlig, faktiskt. Siri är inte Siri längre. Det är som att hon själv har förvandlats till en demon. Så för att överleva tar Ti till sin fantasi och beslutar sig för att besegra mammans demoner. ', 'movie/flickan_mamman_och_demonerna.jpg', 'sve', 'sve', 'DivX', 44, 'http://www.imdb.com/title/tt4841464/', 'https://www.youtube.com/watch?v=RzCpF4VSQBo', '2016-04-15 11:34:49', '2016-05-22 11:30:29', 39),
+                ('Hermelinen', 'Christian Vincent', 98, 2016, 'Michael är en ökänt hård domare som sällan dömer någon till lägre straff än 10 år. En dag förändras allt när han återser Ditte som kommer in på jurytjänst. Sex år tidigare träffade Michel Ditte när han låg på sjukhuset och hon var narkosläkare. Michael förälskade sig i Ditte och hon var kanske den enda kvinna han någon förälskat sig i.', 'movie/hermelinen.jpg', 'sve', 'fre', 'DivX', 44, 'http://www.imdb.com/title/tt4216908/', 'https://www.youtube.com/watch?v=QRxyQjDnuxs', '2016-04-29 13:43:39', '2016-05-21 19:35:42', 49),
+                ('Mothers day', 'Garry Marshall', 118, 2016, 'Det är bara några dagar kvar till Mors dag och Sandy, Miranda, Jesse och Bradley planerar på skilda håll hur de ska tillbringa dagen: med en ny kärlek, en förlorad kärlek - eller ingen kärlek alls. Oavsett vilket kommer detta bli en Mors Dag att minnas...', 'movie/mothers_day.jpg', 'sve', 'eng', 'DivX', 49, 'http://www.imdb.com/title/tt4824302/', 'https://www.youtube.com/watch?v=2BPr217zLps', '2016-05-06 19:32:28', '2016-05-22 16:35:11', 54),
+                ('Paddington', 'Paul King', 118, 2014, 'Paddington har vuxit upp djupt i den peruanska djungeln med sin moster Lucy som, inspirerad av ett möte med en engelsk upptäcktsresande, har fått sin brorson att drömma om ett spännande liv i London. När en jordbävning förstör deras hem bestämmer sig Lucy för att smuggla sin unge brorson ombord på en båt på väg till England, på jakt efter ett bättre liv.', 'movie/paddington.jpg', 'sve', 'sve', 'DivX', 39, 'http://www.imdb.com/title/tt1109624/', 'https://www.youtube.com/watch?v=CxeBdrGGU8U', '2015-01-16 12:22:34', '2016-03-15 16:01:20', 65),
+                ('The Intern', 'Nancy Mayers', 121, 2015, 'Den 70-åriga änklingen Ben har tröttnat på livet som pensionär och ger sig in i leken igen genom en praktikplats på en nätbutik för mode som drivs av karriäristan Jules.  Oscar-belönade Robert De Niro och Anne Hathaway har huvudrollerna i höstens stora romantiska komedi The Intern i regi av Oscar-nominerade Nancy Meyers.', 'movie/the_intern.jpg', 'sve', 'eng', 'DivX', 42, 'http://www.imdb.com/title/tt2361509/', 'https://www.youtube.com/watch?v=W-DEy3mylCs', '2015-10-09 11:31:36', '2016-05-18 19:35:29', 112)
+            ;
 EOD;
         return $this->db->executeQuery($sql);
     }
@@ -295,10 +322,9 @@ EOD;
      */
     public function addNewFilmToDb($params, $genres)
     {
-
         $sql = '
-            INSERT INTO Rm_Movie (title, director, length, year, plot, image, subtext, speech, quality, format, price, imdb, youtube)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+            INSERT INTO Rm_Movie (title, director, length, year, plot, image, subtext, speech, quality, format, price, imdb, youtube, published, rented)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NULL);
         ';
 
         $res = $this->db->ExecuteQuery($sql, $params);
@@ -417,7 +443,10 @@ EOD;
                 format      = ?,
                 price       = ?,
                 imdb        = ?,
-                youtube     = ?
+                youtube     = ?,
+                published   = ?,
+                rented      = ?,
+                rents       = ?
             WHERE
                 id = ?
         ';

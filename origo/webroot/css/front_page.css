@@ -1,0 +1,87 @@
+img {
+    height: auto;
+    margin: auto;
+    max-width: 100%;
+    width: auto;
+}
+
+.sidbar {
+    float: left;
+    width: 15%;
+}
+
+.sidbar h2 {
+    background: #b50000;
+    color: #fff;
+    margin: 0;
+    padding: 3px 0 3px 10px;
+}
+
+.sidbar section {
+    margin-bottom: 5px;
+}
+
+.main-container {
+    float: right;
+    text-align: center;
+    width: 82%;
+}
+
+.main-container h2 {
+    background: #b50000;
+    color: #fff;
+    margin: 0;
+    padding: 3px 0 3px 10px;
+}
+
+.new-movies {
+    overflow: auto;
+}
+
+.new-movies, .news h2 {
+    text-align: left;
+}
+
+.new-movie {
+    float: right;;
+    margin: 1%;
+    text-align: center;
+    width: 30%;
+}
+
+/**
+ * Genres menu
+ */
+ .genres {
+     display: table;
+     list-style-type: none;
+     margin:5px auto;
+     padding: 0;
+ }
+
+ .genres li {
+     background: #b50000;
+     border-radius: 5px;
+     margin-bottom: .3em;
+     margin-left: .3em;
+     padding: .1em;
+     text-align: center;
+     width: 6em;
+ }
+
+ .genres li a {
+     color: #fff;
+     text-decoration: none;
+ }
+
+ .genres li a:hover {
+     color: #f5a06e;
+ }
+
+ /**
+  * Sidebar movies
+  */
+ .sidebar-movie {
+     margin-top: 5px;
+     text-align: center;
+ }

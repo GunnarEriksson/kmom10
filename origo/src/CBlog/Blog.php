@@ -7,7 +7,6 @@ class Blog
 {
     private $db;
     private $acronym;
-    private $blogTitle;
     private $numOfBlogs;
     private $parameters;
     private $sqlOrig;
@@ -26,8 +25,7 @@ class Blog
         $this->acronym = $acronym;
         $this->parameters = $this->createDefaultParameters();
         $this->sqlOrig = $this->createOriginalSqlQuery();
-        $this->sort = " ORDER BY updated DESC";
-        $this->blogTitle = null;
+        $this->sort = " ORDER BY UNIX_TIMESTAMP(GREATEST(COALESCE(published, 0), COALESCE(updated, 0), COALESCE(created, 0), COALESCE(deleted, 0))) DESC";
         $this->numOfBlogs = null;
         $this->limit = null;
     }
@@ -45,7 +43,9 @@ class Blog
         $default = array (
             'slug' => null,
             'hits' => null,
-            'page' => null
+            'page' => null,
+            'author' => null,
+            'category' => null
         );
 
         return $default;
@@ -81,7 +81,7 @@ class Blog
             $blogs = $this->getBlogsFromDb($query);
             $html = $this->createBlogPosts($blogs, $textFilter);
         } catch (UnexpectedValueException $exception) {
-            $html = $this->createErrorMessagePage($exception->getMessage());
+            $html = $this->createErrorMessageBlog($exception->getMessage());
         }
 
         return $html;
@@ -122,10 +122,21 @@ class Blog
             $where .= ' AND 1';
         }
 
-        $where .= ' AND published <= NOW()';
+        // Show created and deleted posts for logged in users.
+        $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
+        if (!isset($acronym)) {
+            $where .= ' AND published <= NOW()';
+        }
+
+        // Lägg in created and deleted om man är inloggad.
+
+        if($this->parameters['category']) {
+          $where .= ' AND category = ?';
+          $sqlParameters[] = $this->parameters['category'];
+        }
 
         if($this->parameters['hits'] && $this->parameters['page']) {
-          $this->limit = " LIMIT {$this->parameters['hits']} OFFSET " . (($this->parameters['page'] - 1) * $this->parameters['hits']);
+            $this->limit = " LIMIT {$this->parameters['hits']} OFFSET " . (($this->parameters['page'] - 1) * $this->parameters['hits']);
         }
 
         if (empty($sqlParameters)) {
@@ -202,30 +213,51 @@ class Blog
             $author = htmlentities($blog->author, null, 'UTF-8');
             $category = htmlentities($blog->category, null, 'UTF-8');
             if (empty($author)) {
-                $author = "Anonym";
+                $author = "anonym";
             }
 
-            $published = htmlentities($blog->published, null, 'UTF-8');
+            if (isset($blog->published) && isset($blog->updated)) {
+                $updated = htmlentities($blog->updated, null, 'UTF-8');
+                $status = "Uppdaterad: {$updated}";
+            } else if (isset($blog->published)) {
+                $published = htmlentities($blog->published, null, 'UTF-8');
+                $status = "Publicerad: {$published}";
+            } else if (isset($blog->deleted)) {
+                $deleted = $published = htmlentities($blog->deleted, null, 'UTF-8');
+                $status = "Borttagen: {$deleted}";
+            } else {
+                $created = $published = htmlentities($blog->created, null, 'UTF-8');
+                $status = "Skapad: {$created}";
+            }
+
             $data   = $textFilter->doFilter(htmlentities($blog->data, null, 'UTF-8'), $blog->filter);
 
-            // Set blog title if it is only one blog
-            if ($this->parameters['slug']) {
-                $this->blogTitle = $title;
+            if (!$this->parameters['slug']) {
+                $data = $this->getSubstring($data, 200);
+                $data .= "<p><a href='news_blog.php?slug={$blog->slug}'>Läs mer >></a></p>";
             }
 
-            $editLink = $this->acronym ? "<a href='content_edit.php?id={$blog->id}'>Uppdatera posten</a>" : null;
+            $removeButton = null;
+            $editButton = null;
+            if ($this->hasAdminRights($author)) {
+                $removeButton= "<a href='content_delete.php?id=" . htmlentities($blog->id) . "'><img class='news-blog-admin-button' src='img/icons/delete.png' title='Ta bort nyhet' alt='Ta_bort' /></a>";
+                $editButton .= "<a href='content_edit.php?id=" . htmlentities($blog->id) . "'><img class='news-blog-admin-button' src='img/icons/edit.png' title='Uppdatera nyhet' alt='Uppdatera' /></a>";
+            }
+
+            $name = $this->getNameFromAcronym($author);
+
+
 
             $html .= <<<EOD
                 <article class="blogpost">
                     <header>
-                        <h2><a href='news_blog.php?slug={$blog->slug}'>{$title}</a></h2>
+                        <h2><a href='news_blog.php?slug={$blog->slug}'>{$title}</a>{$removeButton}{$editButton}</h2>
                     </header>
                     <p>{$data}</p>
-                    <p>{$editLink}<p>
                     <footer>
                         <p>
                             <span class='blog-info float-left'>Kategori: {$category}</span>
-                            <span class='blog-info float-right'>Publicerad: {$published} av {$author}</span>
+                            <span class='blog-info float-right'>{$status} av {$name}</span>
                         </p>
                     </footer>
                 </article>
@@ -235,24 +267,86 @@ EOD;
         return $html;
     }
 
+    private function getSubstring($textString, $numOfChar)
+    {
+        $textEndPos = $this->getSpacePosInString($textString, $numOfChar);
+        if ($textEndPos === 0) {
+            $text = substr($textString, 0, $numOfChar);
+        } else {
+            $text = substr($textString, 0, $textEndPos);
+            $text .= " ...";
+        }
+
+        return $text;
+    }
+
+    private function getSpacePosInString($textString, $offset)
+    {
+        $pos = 0;
+        if (strlen($textString) >= $offset) {
+            $pos = strpos($textString, ' ', $offset);
+        }
+
+        return $pos;
+    }
+
+    private function hasAdminRights($author)
+    {
+        $isAdminMode = false;
+        $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
+        if (isset($acronym)) {
+            if (strcmp ($acronym , 'admin') === 0 || strcmp ($acronym , $author) === 0) {
+                $isAdminMode = true;
+            }
+        }
+
+        return $isAdminMode;
+    }
+
+    private function getNameFromAcronym($acronym)
+    {
+        $sql = ' SELECT name FROM Rm_User WHERE acronym = ?';
+
+        $params = array($acronym);
+        $res = $this->db->executeSelectQueryAndFetchAll($sql, $params);
+
+        $name = 'Anonym';
+        if (isset($res) && count($res) > 0) {
+            $name = htmlentities($res[0]->name, null, 'UTF-8');
+        }
+
+        return $name;
+    }
+
     /**
-     * Helper function to create an error message page.
+     * Helper function to create an error message blog.
      *
-     * Creats an HTML arcticle to inform than an error has occured.
+     * Creats an blog message to inform than an error has occured.
      *
      * @param  string $errorMessage the error message to be displayed at the page.
      *
      * @return html the article presenting the error.
      */
-    private function createErrorMessagePage($errorMessage)
+    private function createErrorMessageBlog($errorMessage)
     {
+        date_default_timezone_set('UTC');
+        $dateTime = date("Y-m-d H:i:s");
+
+        $this->numOfBlogs = 1;
+
         $html = <<<EOD
-        <article>
-            <header>
-                <h1>Fel har uppstått</h1>
+            <article class="blogpost">
+                <header>
+                    <h2><a href='#'>Meddelande</a></h2>
                 </header>
                 <p>{$errorMessage}</p>
-        </article>
+                <footer>
+                    <p>
+                        <span class='blog-info float-left'>Kategori: meddelanden</span>
+                        <span class='blog-info float-right'>Publicerad: {$dateTime} av system</span>
+                    </p>
+                </footer>
+            </article>
 EOD;
 
         return $html;
@@ -284,11 +378,6 @@ EOD;
         return array('sql' => $sql, 'params' => $query['params']);
     }
 
-    public function getBlogTitle()
-    {
-        return $this->blogTitle;
-    }
-
     /**
      * Get the number of blogs.
      *
@@ -313,5 +402,46 @@ EOD;
     public function getMaxNumPages()
     {
         return ceil($this->numOfBlogs / $this->parameters['hits']);
+    }
+
+    public function createNewsBlogCategoryForm()
+    {
+        $html = '<form class="news-blog-category-form">';
+        $html .= '<fieldset>';
+        $html .= '<legend>Kategorier</legend>';
+        $html .= '<input type=hidden name=hits value="' . htmlentities($this->parameters['hits']) . '"/>';
+        $html .= '<input type=hidden name=page value="1"/>';
+        $html .= "<ul class='categories'><li><a href='?genre='>alla</a></li>";
+        $categories = $this->fetchAllCategories();
+        foreach ($categories as $key => $category) {
+            if (strcasecmp($this->parameters['category'], $category) === 0) {
+                $category = htmlentities($category, null, 'UTF-8');
+                $html .= "<li><span class=selected>{$category}</span></li>";
+            } else {
+                $category = htmlentities($category, null, 'UTF-8');
+                $html .= "<li><a href='?category={$category}'>{$category}</a></li>";
+            }
+        }
+        $html .= '</ul>';
+        $html .= '</fieldset>';
+        $html .= '</form>';
+
+        return $html;
+    }
+
+    private function fetchAllCategories()
+    {
+        $sql = '
+            SELECT * FROM Rm_Category;
+        ';
+
+        $res = $this->db->executeSelectQueryAndFetchAll($sql);
+
+        $categoriesArray = array();
+        foreach ($res as $key => $row) {
+            $categoriesArray[] = $row->name;
+        }
+
+        return $categoriesArray;
     }
 }
