@@ -32,7 +32,7 @@ class FrontPage
         foreach ($res as $key => $row) {
             $html .= "<a href='movie.php?id={$row->id}'>";
             $html .= "<div class='{$class}'>";
-            $imgSpec = $this->setImageSpecifications();
+            $imgSpec = $this->setImageSpecifications($image);
             $html .= "<img src='img.php?src=" . htmlentities($row->image) . "{$imgSpec}' alt='" . htmlentities($row->title) . "'/>";
             $html .= "<br/>" . htmlentities($row->title);
             $html .= "</div>";
@@ -42,7 +42,7 @@ class FrontPage
         return $html;
     }
 
-    private function setImageSpecifications()
+    private function setImageSpecifications($parameters)
     {
         $imgSpec = null;
         if (isset($parameters['width'])) {

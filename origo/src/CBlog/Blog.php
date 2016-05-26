@@ -123,8 +123,7 @@ class Blog
         }
 
         // Show created and deleted posts for logged in users.
-        $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
-        if (!isset($acronym)) {
+        if (!isset($this->acronym)) {
             $where .= ' AND published <= NOW()';
         }
 
@@ -293,9 +292,8 @@ EOD;
     private function hasAdminRights($author)
     {
         $isAdminMode = false;
-        $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
-        if (isset($acronym)) {
-            if (strcmp ($acronym , 'admin') === 0 || strcmp ($acronym , $author) === 0) {
+        if (isset($this->acronym)) {
+            if (strcmp ($this->acronym , 'admin') === 0 || strcmp ($this->acronym , $author) === 0) {
                 $isAdminMode = true;
             }
         }

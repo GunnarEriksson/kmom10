@@ -1,14 +1,4 @@
 /**
- * General
- */
-img {
-    height: auto;
-    margin: auto;
-    max-width: 100%;
-    width: auto;
- }
-
-/**
  * Header
  */
 .calendar-header {

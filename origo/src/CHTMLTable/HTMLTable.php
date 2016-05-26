@@ -298,5 +298,64 @@ class HTMLTable
         return $nav;
     }
 
+    public function generateScoreBoardTable($res, $minNumOfRows)
+    {
+        $html = "<table>";
+        $html .= $this->createScoreBoardTableHead();
+        $html .= $this->createScoreBoardTableBody($res, $minNumOfRows);
+        $html .= $this->createMovieTableFooter();
+        $html .= "</table>";
+
+        return $html;
+    }
+
+    private function createScoreBoardTableHead()
+    {
+        $tableHead = "<thead>";
+        $tableHead .= "<tr>";
+        $tableHead .= "<th>Namn</th>";
+        $tableHead .= "<th>Poäng</th>";
+        $tableHead .= "</thead>";
+
+        return $tableHead;
+    }
+
+    private function createScoreBoardTableBody($res, $minNumOfRows)
+    {
+        $counter = 0;
+
+        $tableBody = "<tbody>";
+        foreach ($res as $key => $row) {
+            $tableBody .= "<tr>";
+            $tableBody .= "<td>" . htmlentities($row->name) . "</td>";
+            $tableBody .= "<td>" . htmlentities($row->points) . "</td>";
+            $tableBody .= "</tr>\n";
+
+            $counter++;
+        }
+
+        // Fill table up to the minimum of rows
+        for ($i = $counter; $i < $minNumOfRows; $i++) {
+            $tableBody .= "<tr>";
+            $tableBody .= "<td>-</td>";
+            $tableBody .= "<td>-</td>";
+            $tableBody .= "</tr>\n";
+        }
+
+        $tableBody .= "</tbody>";
+
+        return $tableBody;
+    }
+
+    private function createMovieTableFooter()
+    {
+        $tableFooter = "<tfoot>";
+        $tableFooter .= "<tr>";
+        $tableFooter .= "<td colspan = '2'>Tärningspel 100</td>";
+        $tableFooter .= "</tr>";
+        $tableFooter .= "</tfoot>";
+
+        return $tableFooter;
+    }
 
 }

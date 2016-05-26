@@ -652,4 +652,19 @@ EOD;
         return $output;
     }
 
+    public function updateNumOfRentsInDb($params)
+    {
+        $sql = '
+            UPDATE Rm_Movie SET
+                rented = NOW(),
+                rents  = ?
+            WHERE
+                id = ?
+        ';
+
+        $res = $this->db->ExecuteQuery($sql, $params);
+
+        return $res;
+    }
+
 }

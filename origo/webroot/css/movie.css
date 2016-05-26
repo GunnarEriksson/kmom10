@@ -48,6 +48,10 @@
     border: 0;
 }
 
+.movie-table tr td:first-child {
+    width: 10%;
+}
+
 .movie-table tr td:nth-child(-n+2) {
     text-align: center;
 }

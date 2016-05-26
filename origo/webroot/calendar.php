@@ -34,7 +34,7 @@ $origo['main'] = <<<EOD
 <h1>{$origo['title']}</h1>
 <div class="calendar-wrapper">
     <div class="calendar-header">
-        <img src="img/calendar/{$calendar->getMonthImgName()}" alt="Bild för månaden {$calendar->getMonth()}"/>
+        <img src="img.php?src=calendar/{$calendar->getMonthImgName()}" alt="Bild för månaden {$calendar->getMonth()}"/>
         <a href="?month={$calendar->getPreviousMonth()}">&lt;&lt;</a>
         <h2 class="calendar-date">{$calendar->getMonth()} {$calendar->getYear()}</h2>
         <a class="text-align-right" href="?month={$calendar->getNextMonth()}">>></a>

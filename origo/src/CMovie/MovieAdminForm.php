@@ -359,4 +359,47 @@ EOD;
 
         return $output;
     }
+
+    public function createRentMovieForm($res, $result)
+    {
+        $params = $this->getParameterFromFilmWithIdFromDb($res);
+
+        $output = null;
+        if (isset($params)) {
+            $message = $this->createMessage($result);
+            $output = $this->createRentForm($params, $message);
+        }
+
+        return $output;
+    }
+
+    private function createMessage($result)
+    {
+        $message = null;
+        if (isset($result)) {
+            if ($result) {
+                $message = "Tack för du använder Rental Movies, filmen är nu tillgänglig att se.";
+            } else {
+                $message = "Det uppstod ett problem när du försökte hyra filmen. Var vänlig försök igen!";
+            }
+        }
+
+
+        return $message;
+    }
+
+    private function createRentForm($params, $message)
+    {
+        $rents = $params['rents'] + 1;
+        $output = <<<EOD
+        <form class='rent-button' action='rent-process.php' method=post>
+            <input type='hidden' name='id' value="{$params['id']}"/>
+            <input type='hidden' name='rents' value="{$rents}"/>
+            <input type='submit' name='save' value='Hyr'/>
+            <output>{$message}</output>
+        </form>
+EOD;
+
+        return $output;
+    }
 }

@@ -16,8 +16,10 @@ $year2    = isset($_GET['year2']) && !empty($_GET['year2']) ? $_GET['year2'] : n
 $orderby  = isset($_GET['orderby']) ? strtolower($_GET['orderby']) : 'id';
 $order    = isset($_GET['order'])   ? strtolower($_GET['order'])   : 'asc';
 $genre    = isset($_GET['genre']) ? $_GET['genre'] : null;
+$result   = isset($_GET['result'])  ? $_GET['result'] : null;
 
 $db = new Database($origo['database']);
+$MovieAdminForm = new MovieAdminForm();
 
 if ($id) {
     $parameters = array(
@@ -35,7 +37,8 @@ if ($id) {
     $movieSearch = new MovieSearch($db, $parameters);
     $res = $movieSearch->searchMovie();
     $MovieContentView = new MovieContentView();
-    $movie = $MovieContentView->generateMovieContentView($res);
+    $rentButton = $MovieAdminForm->createRentMovieForm($res, $result);
+    $movie = $MovieContentView->generateMovieContentView($res, $rentButton);
 
 } else {
 
@@ -68,7 +71,6 @@ if ($id) {
    $row = $movieSearch->getNumberOfRows();
    $sqlDebug = $db->Dump();
 
-   $MovieAdminForm = new MovieAdminForm();
    $adminForm = $MovieAdminForm->generateMovieAdminForm();
 
    $movie = <<<EOD

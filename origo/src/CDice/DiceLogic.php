@@ -12,6 +12,7 @@ class DiceLogic
     private $savedScore;
     private $playerMessage;
     private $hasWon;
+    private $points;
 
     /**
      * Constructor
@@ -26,14 +27,15 @@ class DiceLogic
     }
 
     /**
-     * Helper method to reset dice logic variables.
+     * Resets dice logic variables.
      *
      * @return void.
      */
-    private function resetVariables()
+    public function resetVariables()
     {
         $this->score = 0;
         $this->savedScore = 0;
+        $this->points = 0;
         $this->playerMessage = null;
         $this->hasWon = false;
     }
@@ -51,36 +53,64 @@ class DiceLogic
      */
     public function roll()
     {
-        if ($this->hasWon) {
-            $this->resetVariables();
+        if (!$this->hasWon) {
+            $this->playerMessage = null;
+            $diceResult = $this->dice->roll();
+            if ($diceResult == self::LOSING_SCORE_NO) {
+                $this->points -= $this->score;
+                $this->score = 0;
+                $this->playerMessage = "Det blev en etta. Du förlorade alla poäng du inte hade sparat!";
+            } else {
+                $this->score += $diceResult;
+                if ($this->isGameFinished()) {
+                    $this->endGame();
+                }
+            }
         }
-
-        $this->playerMessage = null;
-        $diceResult = $this->dice->roll();
-        if ($diceResult == self::LOSING_SCORE_NO) {
-            $this->score = 0;
-            $this->playerMessage = "Det blev en etta. Du förlorade alla poäng du inte hade sparat!";
-        } else {
-            $this->score += $diceResult;
-        }
-
-        $this->checkIfPlayerHasWon();
     }
 
-    /**
-     * Checks if player has won the game.
-     *
-     * If the player has 100 or more points, the player has won the game. A message
-     * is set that the player has won the game.
-     *
-     * @return [type] [description]
-     */
-    private function checkIfPlayerHasWon()
+    private function isUserMode()
     {
+        $isAdminMode = false;
+        $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
+        if (isset($acronym)) {
+            $isAdminMode = true;
+        }
+
+        return $isAdminMode;
+    }
+
+    private function isGameFinished()
+    {
+        $isGameFinished = false;
+
         $totalResult = $this->score + $this->savedScore;
         if ($totalResult >= self::POINTS_AT_WIN) {
-            $this->playerMessage = 'GRATTIS, du har VUNNIT. Du har ett hundra poäng eller mer!';
-            $this->hasWon = true;
+            $isGameFinished = true;
+        }
+
+        return $isGameFinished;
+    }
+
+    private function endGame()
+    {
+        $this->hasWon = true;
+        $this->calculatePoints();
+        $this->setMessageToPlayer();
+    }
+
+    private function calculatePoints()
+    {
+        $this->points += 100;
+        $this->points = $this->points < 0 ? 0 : $this->points;
+    }
+
+    private function setMessageToPlayer()
+    {
+        if ($this->isUserMode()) {
+            $this->playerMessage = 'Du fick ' . $this->points . " poäng. Vill du vara med i tävlingen, spara poängen med den gröna knappen!";
+        } else {
+            $this->playerMessage = 'Du fick ' . $this->points . " poäng!";
         }
     }
 
@@ -124,6 +154,7 @@ class DiceLogic
     {
         $this->savedScore += $this->score;
         $this->score = 0;
+        $this->points -= 5;
     }
 
     /**
@@ -148,5 +179,20 @@ class DiceLogic
     public function getMessage()
     {
         return $this->playerMessage;
+    }
+
+    public function hasGameFinished()
+    {
+        return $this->hasWon;
+    }
+
+    public function getPoints()
+    {
+        return $this->points;
+    }
+
+    public function resetPoints()
+    {
+
     }
 }

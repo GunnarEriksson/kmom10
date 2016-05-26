@@ -26,6 +26,7 @@ $rented = isset($_POST['rented'])  ? $_POST['rented'] : null;
 $rents = isset($_POST['rents'])  ? $_POST['rents'] : null;
 $genre   = isset($_POST['genre'])  ? $_POST['genre'] : null;
 $save   = isset($_POST['save'])  ? true : false;
+$rent = isset($_POST['rent'])  ? $_POST['rent'] : null;
 $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
 
 // Check that incoming parameters are valid

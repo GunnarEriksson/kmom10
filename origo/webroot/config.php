@@ -94,6 +94,20 @@ $menu = array(
         ),
 
         // This is a menu item
+        'calendar'  => array(
+            'text'  =>'Kalender',
+            'url'   =>'calendar.php',
+            'title' => 'Kalender'
+        ),
+
+        // This is a menu item
+        'dice'  => array(
+            'text'  =>'Tävling',
+            'url'   =>'dice.php',
+            'title' => 'Tävling'
+        ),
+
+        // This is a menu item
         'about'  => array(
             'text'  =>'Om RM',
             'url'   =>'about.php',

@@ -1,3 +1,30 @@
+#main {
+    overflow: auto;
+}
+
+/**
+ * Sections
+ */
+
+.game {
+    float: left;
+    width: 70%;
+}
+
+.game h2, .scoreboard h2 {
+    background: #b50000;
+    color: #fff;
+    margin: 0;
+    padding: 3px 0 3px 10px;
+}
+
+.scoreboard {
+    float: right;
+    width: 27%;
+}
+
+
+
 /**
  * Game buttons
  */
@@ -7,8 +34,7 @@
 }
 
 .button > li {
-    background: #396a2f;
-    background: linear-gradient(#396a2f, #55a046);
+    background: #b50000;
     border-radius: 7px;
     display: inline-block;
     margin-bottom: .3em;
@@ -51,3 +77,72 @@
 .dice > li.dice-4 { background-position:  -64px 0; }
 .dice > li.dice-5 { background-position:  -32px 0; }
 .dice > li.dice-6 { background-position:    0 0; }
+
+/**
+ * Scoreboard
+ */
+.scoreboard table {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.scoreboard thead, tfoot {
+    background-color: #b50000;
+    color: #fff;
+}
+
+.scoreboard tr {
+    display: table-row;
+}
+
+.scoreboard tr:nth-of-type(even) {
+    background-color: #eee;
+}
+
+.scoreboard tbody td {
+    font-size: .8em;
+    padding: .5em .5em;
+}
+
+.scoreboard td, th {
+    margin: 0;
+    padding: .2em .5em;
+    border: 0;
+}
+
+.scoreboard tbody tr td:first-child {
+    padding-left: 1em;
+}
+
+.scoreboard tbody tr td:last-child {
+    text-align: center;
+    width: 10%;
+}
+
+ /**
+  * Save button
+  */
+.save-button {
+    margin-top: 20px;
+}
+.save-button
+input[type="submit"] {
+    color: #fff;
+    padding: 0.5em;
+    width: 6em;
+}
+
+.save-button
+.ongoing {
+    background-color: #b50000;
+}
+
+.save-button
+.finished {
+    background-color: #396a2f;
+}
+
+.save-button
+input[type="submit"]:hover {
+    color: #f5a06e;
+}

@@ -57,7 +57,7 @@ class MovieContentView
      * @param  [] $res  the result set of parameters, from database, for a movie.
      * @return html     the article for the movie.
      */
-    public function generateMovieContentView($res)
+    public function generateMovieContentView($res, $rentButton)
     {
         $dbParams =  (array) $res[0];
         $this->parameters = array_merge($this->parameters, $dbParams);
@@ -76,6 +76,11 @@ class MovieContentView
         $MovieContentView .= "</div>";
         $MovieContentView .= $this->createMovieInfoList();
         $MovieContentView .= "<p><b>Generes: </b>" . htmlentities($this->parameters['genre']) . "</p>";
+
+        if ($this->isUserMode()) {
+            $MovieContentView .= $rentButton;
+        }
+
         $MovieContentView .= "</article>";
 
         return $MovieContentView;
@@ -96,6 +101,17 @@ class MovieContentView
             if (strcmp ($acronym , 'admin') === 0) {
                 $isAdminMode = true;
             }
+        }
+
+        return $isAdminMode;
+    }
+
+    private function isUserMode()
+    {
+        $isAdminMode = false;
+        $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
+        if (isset($acronym)) {
+            $isAdminMode = true;
         }
 
         return $isAdminMode;

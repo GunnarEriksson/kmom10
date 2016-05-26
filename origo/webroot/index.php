@@ -17,7 +17,7 @@ $newMovies = $frontPage->generateMovieSections($parameters, null, "new-movie");
 
 $genres = $frontPage->generateGenresList();
 
-$image = array('width' => 71, 'height' => 100, 'sharpen' => true);
+$image = array('width' => 119, 'height' => 170, 'sharpen' => true);
 $parameters = array('hits' => 1, 'page' => 1, 'orderby' => 'rented', 'order' => 'desc');
 $lastRented = $frontPage->generateMovieSections($parameters, $image, "sidebar-movie");
 
@@ -25,7 +25,7 @@ $parameters = array('hits' => 1, 'page' => 1, 'orderby' => 'rents', 'order' => '
 $mostRented = $frontPage->generateMovieSections($parameters, $image, "sidebar-movie");
 
 $textFilter = new TextFilter();
-$blog = new Blog($db, null);
+$blog = new Blog($db);
 $parameters = array('slug' => null, 'hits' => 3,
     'page' => 1,
     'category' => null

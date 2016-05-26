@@ -32,6 +32,13 @@ $origo['main'] = <<<EOD
   <output><strong>{$output}</strong></output>
   </fieldset>
 </form>
+<form action="user_create.php" method=get>
+  <fieldset>
+  <legend>Skapa nytt konto</legend>
+  <output>Inte ännu medlem? Skapa nytt konto.</output><br/>
+  <input type='submit' name='createUser' value='Skapa'/>
+  </fieldset>
+</form>
 EOD;
 
 // Finally, leave it all to the rendering phase of Origo.
