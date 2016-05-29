@@ -34,6 +34,11 @@ img {
     width: auto;
  }
 
+ .small-italic {
+     font-size: .7em;
+     font-style: italic;
+ }
+
 /**
  * Layout of the main page elements
  */

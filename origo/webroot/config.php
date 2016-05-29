@@ -122,10 +122,64 @@ $menu = array(
         ),
 
         // This is a menu item
-        'logout'  => array(
-            'text'  =>'Logga ut',
-            'url'   =>'logout.php',
-            'title' => 'Logga ut'
+        'account'  => array(
+            'text'  =>'Konto',
+            'url'   =>'',
+            'title' => '',
+
+            // Here we add the submenu, with some menu items, as part of a existing menu item
+            'submenu' => array(
+
+                'items' => array(
+                    // This is a menu item of the submenu
+                    'item 1'  => array(
+                        'text'  => 'Profil',
+                        'url'   => 'user_profile.php',
+                        'title' => 'Profil'
+                    ),
+
+                    // This is a menu item of the submenu
+                    'item 2'  => array(
+                        'text'  => 'Logga ut',
+                        'url'   => 'logout.php',
+                        'title' => 'Logga ut',
+                    ),
+                ),
+            ),
+        ),
+
+        // This is a menu item
+        'admin'  => array(
+            'text'  =>'Admin',
+            'url'   =>'',
+            'title' => '',
+
+            // Here we add the submenu, with some menu items, as part of a existing menu item
+            'submenu' => array(
+
+                'items' => array(
+                    // This is a menu item of the submenu
+                    'item 1'  => array(
+                        'text'  => 'Profil',
+                        'url'   => 'user_profile.php',
+                        'title' => 'Profil'
+                    ),
+
+                    // This is a menu item of the submenu
+                    'item 1'  => array(
+                        'text'  => 'Konton',
+                        'url'   => 'user_admin.php',
+                        'title' => 'Konton'
+                    ),
+
+                    // This is a menu item of the submenu
+                    'item 3'  => array(
+                        'text'  => 'Logga ut',
+                        'url'   => 'logout.php',
+                        'title' => 'Logga ut',
+                    ),
+                ),
+            ),
         ),
     ),
 

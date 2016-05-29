@@ -75,10 +75,10 @@ function getNavbar($menu)
             // Add the menu item
             $url = $createUrl($item['url']);
 
-            if (!isset($_SESSION['user']) && strcmp ($item['text'] , 'Logga ut') === 0) {
-                // Do not print Logout in header;
-            } else if (isset($_SESSION['user']) && strcmp ($item['text'] , 'Logga in') === 0) {
-                // Do not print out login in header
+            if (!isset($_SESSION['user']) && shouldHideNotLoggedInNavBarItems($item['text'])) {
+                // Do not print admin or account in navbar;
+            } else if (shouldHideNonAdminNavBarItems($item['text']) || shouldHideNonUserNavBarItems($item['text'])) {
+
             } else {
                 $html .= "\n<li><a {$class} href='{$url}' title='{$item['title']}'>{$item['text']}</a>{$submenu}</li>\n";
             }
@@ -103,4 +103,74 @@ function getNavbar($menu)
     $wrapper = $menu['wrapper'];
 
     return "\n<{$wrapper}{$id}{$class}>{$html}</{$wrapper}>\n";
+}
+
+/**
+ * Hides items in nav bar when no user has logged in.
+ *
+ * Hides the navbar items Admin and Konto when no user has logged in.
+ *
+ * @param  string   $item the navbar item to be printed in navbar
+ *
+ * @return boolean  true if the item should not be written, false otherwise.
+ */
+function shouldHideNotLoggedInNavBarItems($item)
+{
+    $shouldHide = false;
+
+    if (strcmp ($item , 'Admin') === 0 || strcmp ($item , 'Konto') === 0) {
+        $shouldHide = true;
+    }
+
+    return $shouldHide;
+}
+
+/**
+ * Hides items in nav bar when an administrator has logged in.
+ *
+ * Hides the navbar items Logga in and Konto when an administrator has logged in.
+ *
+ * @param  string   $item the navbar item to be printed in navbar
+ *
+ * @return boolean  true if the item should not be written, false otherwise.
+ */
+function shouldHideNonAdminNavBarItems($item)
+{
+    $shouldHide = false;
+
+    $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
+    if (isset($acronym)) {
+        if (strcmp ($acronym , 'admin') === 0) {
+            if (strcmp($item , 'Logga in') === 0 || strcmp($item , 'Konto') === 0) {
+                $shouldHide = true;
+            }
+        }
+    }
+
+    return $shouldHide;
+}
+
+/**
+ * Hides items in nav bar when an user (non admin) has logged in.
+ *
+ * Hides the navbar items Logga in and Admin when a user has logged in.
+ *
+ * @param  string   $item the navbar item to be printed in navbar
+ *
+ * @return boolean  true if the item should not be written, false otherwise.
+ */
+function shouldHideNonUserNavBarItems($item)
+{
+    $shouldHide = false;
+
+    $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
+    if (isset($acronym)) {
+        if (strcmp ($acronym , 'admin') !== 0) {
+            if (strcmp($item , 'Logga in') === 0 || strcmp($item , 'Admin') === 0) {
+                $shouldHide = true;
+            }
+        }
+    }
+
+    return $shouldHide;
 }

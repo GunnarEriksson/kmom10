@@ -19,7 +19,7 @@ $genre    = isset($_GET['genre']) ? $_GET['genre'] : null;
 $result   = isset($_GET['result'])  ? $_GET['result'] : null;
 
 $db = new Database($origo['database']);
-$MovieAdminForm = new MovieAdminForm();
+$movieAdminForm = new MovieAdminForm();
 
 if ($id) {
     $parameters = array(
@@ -37,7 +37,7 @@ if ($id) {
     $movieSearch = new MovieSearch($db, $parameters);
     $res = $movieSearch->searchMovie();
     $MovieContentView = new MovieContentView();
-    $rentButton = $MovieAdminForm->createRentMovieForm($res, $result);
+    $rentButton = $movieAdminForm->createRentMovieForm($res, $result);
     $movie = $MovieContentView->generateMovieContentView($res, $rentButton);
 
 } else {
@@ -63,15 +63,16 @@ if ($id) {
     $movieSearch = new MovieSearch($db, $parameters);
     $res = $movieSearch->searchMovie();
     $movieSearchForm = $movieSearch->getMovieSearchForm();
+
     $htmlTable = new HTMLTable();
+    $hitsPerPage = $htmlTable->getHitsPerPage(array(2, 4, 8), $hits);
+    $navigatePageBar = $htmlTable->getPageNavigationBar($hits, $page, $movieSearch->getMaxNumPages());
+    $movieTable = $htmlTable->generateMovieTable($res, $navigatePageBar);
+    $row = $movieSearch->getNumberOfRows();
 
-   $hitsPerPage = $htmlTable->getHitsPerPage(array(2, 4, 8), $hits);
-   $navigatePageBar = $htmlTable->getPageNavigationBar($hits, $page, $movieSearch->getMaxNumPages());
-   $movieTable = $htmlTable->generateMovieTable($res, $navigatePageBar);
-   $row = $movieSearch->getNumberOfRows();
-   $sqlDebug = $db->Dump();
+    $sqlDebug = $db->Dump();
 
-   $adminForm = $MovieAdminForm->generateMovieAdminForm();
+   $adminForm = $movieAdminForm->generateMovieAdminForm();
 
    $movie = <<<EOD
        {$movieSearchForm}

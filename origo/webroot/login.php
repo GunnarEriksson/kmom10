@@ -26,7 +26,7 @@ $origo['main'] = <<<EOD
 <form method=post>
   <fieldset>
   <legend>{$origo['title']}</legend>
-  <p><label>Användare:<br/><input type='text' name='acronym' value=''/></label></p>
+  <p><label>Användarnamn:<br/><input type='text' name='acronym' value=''/></label></p>
   <p><label>Lösenord:<br/><input type='password' name='password' value=''/></label></p>
   <p><input type='submit' name='login' value='Login'/></p>
   <output><strong>{$output}</strong></output>

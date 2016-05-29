@@ -358,4 +358,92 @@ class HTMLTable
         return $tableFooter;
     }
 
+    public function generateUserTable($res, $pageNav = null)
+    {
+        $table = "<table>";
+        $table .= $this->createUserTableHead();
+
+        if (isset($res)) {
+            if (!empty($res)) {
+                $table .= $this->createUserTableBody($res);
+            } else {
+                $table .= $this->createEmptyUserTableBodyWithMessage();
+            }
+        } else {
+            $table .= $this->createEmptyUserTableBodyWithErrorMessage();
+        }
+        $table .= $this->createUserTableFooter($pageNav);
+        $table .= "</table>";
+
+        return $table;
+    }
+
+    private function createUserTableHead()
+    {
+        $tableHead = "<thead>";
+        $tableHead .= "<tr>";
+        $tableHead .= "<th>Akronym" . $this->orderby('acronym') . "</th>";
+        $tableHead .= "<th>Namn" . $this->orderby('name') . "</th>";
+        $tableHead .= "<th>Info</th>";
+        $tableHead .= "<th>E-post</th>";
+        $tableHead .= "<th>Publicerad</th>";
+        $tableHead .= "<th>Uppdaterad</th>";
+        $tableHead .= "<th>Admin</th>";
+        $tableHead .= "</tr>";
+        $tableHead .= "</thead>";
+
+        return $tableHead;
+    }
+
+    private function createUserTableBody($res)
+    {
+        $tableBody = "<tbody>";
+        foreach ($res as $key => $row) {
+            $tableBody .= "<tr>";
+            $tableBody .= "<td>" . htmlentities($row->acronym) . "</td>";
+            $tableBody .= "<td>" . htmlentities($row->name) . "</td>";
+            $tableBody .= "<td>" . htmlentities($row->info) . "</td>";
+            $tableBody .= "<td>" . htmlentities($row->email) . "</td>";
+            $tableBody .= "<td>" . htmlentities($row->published) . "</td>";
+            $tableBody .= "<td>" . htmlentities($row->updated) . "</td>";
+            $tableBody .= "<td><a href='user_edit.php?id="  . htmlentities($row->id) . "'><img class='admin-icon' src='img/icons/edit.png' title='Uppdatera användare alt='Uppdatera' /></a>";
+            if ($row->acronym !=='admin') {
+                $tableBody .= "<a href='user_delete.php?id=" . htmlentities($row->id) . "'><img class='admin-icon' src='img/icons/delete.png' title='Ta bort användare' alt='Ta_bort' /></a></td>";
+            }
+            $tableBody .= "</tr>\n";
+        }
+
+        $tableBody .= "</tbody>";
+
+        return $tableBody;
+    }
+
+    private function createEmptyUsrTableBodyWithErrorMessage()
+    {
+        $tableBody = "<tbody>";
+        $tableBody .= "<td colspan = '8'><span class='message'>Ingen kontakt med databas eller databas saknar innehåll</span></td>";
+        $tableBody .= "</tbody>";
+
+        return $tableBody;
+    }
+
+    private function createEmptyUserTableBodyWithMessage()
+    {   $tableBody = "<tbody>";
+        $tableBody .= "<td colspan = '8'><span class='message'>Inga sökresultat matchade din sökning</span></td>";
+        $tableBody .= "</tbody>";
+
+        return $tableBody;
+    }
+
+    private function createUserTableFooter($pageNav)
+    {
+        $tableFooter = "<tfoot>";
+        $tableFooter .= "<tr>";
+        $tableFooter .= "<td colspan = '7'>{$pageNav}</td>";
+        $tableFooter .= "</tr>";
+        $tableFooter .= "</tfoot>";
+
+        return $tableFooter;
+    }
+
 }
