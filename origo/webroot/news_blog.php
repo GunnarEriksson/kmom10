@@ -6,6 +6,7 @@
  */
 include(__DIR__.'/config.php');
 
+define('NEWS_BLOG_PATH', __DIR__ . DIRECTORY_SEPARATOR . 'news_blog');
 
 // Get parameters
 $slug   = isset($_GET['slug'])  ? $_GET['slug']  : null;
@@ -27,7 +28,7 @@ $parameters = array(
 $db = new Database($origo['database']);
 $textFilter = new TextFilter();
 $blog = new Blog($db, $acronym);
-$blogs = $blog->getBlogPostsFromSlug($parameters, $textFilter);
+$blogs = $blog->getBlogPostsFromSlug($parameters, $textFilter, $category);
 
 $adminNewsBlogsForm = null;
 $newsBlogCategories = null;
@@ -47,16 +48,21 @@ EOD;
     $adminNewsBlogsForm = $blogAdminForm->generateNewsBlogsAdminForm();
 }
 
+$pathParams = array('slug' => $slug, 'category' => $category);
+$breadcrumb = new Breadcrumb($db, NEWS_BLOG_PATH, $pathParams, $menu);
+$breadcrumbNav = $breadcrumb->createNewsBlogBreadcrumb();
 
 
 $origo['title'] = "Nyheter";
 $origo['stylesheets'][] = 'css/news_blog.css';
 $origo['stylesheets'][] = 'css/form.css';
+$origo['stylesheets'][] = 'css/breadcrumb.css';
 
 $origo['debug'] = $db->Dump();
 
 $origo['main'] = <<<EOD
 <section>
+{$breadcrumbNav}
 <h1>{$origo['title']}</h1>
 <div class='news-blog-table'>
     {$adminNewsBlogsForm}

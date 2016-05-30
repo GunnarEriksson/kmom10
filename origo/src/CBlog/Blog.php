@@ -72,14 +72,14 @@ class Blog
      *
      * @return html the blog post or all blog posts, if no slug is defined.
      */
-    public function getBlogPostsFromSlug($parameters, $textFilter)
+    public function getBlogPostsFromSlug($parameters, $textFilter, $category = null)
     {
         $this->parameters = array_merge($this->parameters, $parameters);
 
         $query = $this->prepareSqlQury();
         try {
             $blogs = $this->getBlogsFromDb($query);
-            $html = $this->createBlogPosts($blogs, $textFilter);
+            $html = $this->createBlogPosts($blogs, $textFilter, $category);
         } catch (UnexpectedValueException $exception) {
             $html = $this->createErrorMessageBlog($exception->getMessage());
         }
@@ -204,7 +204,7 @@ class Blog
      *
      * @return html the section with blog post(s) information.
      */
-    private function createBlogPosts($blogs, $textFilter)
+    private function createBlogPosts($blogs, $textFilter, $category)
     {
         $html = null;
         foreach($blogs as $blog) {
@@ -233,7 +233,7 @@ class Blog
 
             if (!$this->parameters['slug']) {
                 $data = $this->getSubstring($data, 200);
-                $data .= "<p><a href='news_blog.php?slug={$blog->slug}'>Läs mer >></a></p>";
+                $data .= "<p>" . $this->createLink('Läs mer >>', $blog->slug, $this->parameters['category']) . "</p>";
             }
 
             $removeButton = null;
@@ -250,7 +250,7 @@ class Blog
             $html .= <<<EOD
                 <article class="blogpost">
                     <header>
-                        <h2><a href='news_blog.php?slug={$blog->slug}'>{$title}</a>{$removeButton}{$editButton}</h2>
+                        <h2>{$this->createLink($title, $blog->slug, $this->parameters['category'])}{$removeButton}{$editButton}</h2>
                     </header>
                     <p>{$data}</p>
                     <footer>
@@ -277,6 +277,22 @@ EOD;
         }
 
         return $text;
+    }
+
+    private function createLink($item, $slug, $category)
+    {
+        $ref = null;
+
+        if (isset($slug)) {
+            $ref .= "news_blog.php?slug={$slug}";
+            if (isset($category)) {
+                $ref .= "&category={$category}";
+            }
+        } else if (isset($category)) {
+            $ref .= "news_blog.php?category={$category}";
+        }
+
+        return "<a href='{$ref}'>{$item}</a>";
     }
 
     private function getSpacePosInString($textString, $offset)
@@ -441,5 +457,24 @@ EOD;
         }
 
         return $categoriesArray;
+    }
+
+    public function getTitleBySlug($slug)
+    {
+        $sql = 'SELECT title FROM Rm_Content WHERE slug = ?';
+
+        if($slug && !empty($slug)) {
+          $sqlParameters[] = $slug;
+        }
+
+        $res = $this->db->ExecuteSelectQueryAndFetchAll($sql, $sqlParameters);
+
+        if ($res && !empty($res)) {
+            $title = $res[0]->title;
+        } else {
+            $title = null;
+        }
+
+        return $title;
     }
 }

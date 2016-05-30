@@ -6,6 +6,8 @@
  */
  include(__DIR__.'/config.php');
 
+ define('MOIVE_PATH', __DIR__ . DIRECTORY_SEPARATOR . 'movie');
+
  // Get parameters
 $id       = isset($_GET['id']) ? $_GET['id'] : null;
 $title    = isset($_GET['title']) ? $_GET['title'] : null;
@@ -17,6 +19,7 @@ $orderby  = isset($_GET['orderby']) ? strtolower($_GET['orderby']) : 'id';
 $order    = isset($_GET['order'])   ? strtolower($_GET['order'])   : 'asc';
 $genre    = isset($_GET['genre']) ? $_GET['genre'] : null;
 $result   = isset($_GET['result'])  ? $_GET['result'] : null;
+$path = isset($_GET['path']) ? $_GET['path'] : null;
 
 $db = new Database($origo['database']);
 $movieAdminForm = new MovieAdminForm();
@@ -36,9 +39,10 @@ if ($id) {
 
     $movieSearch = new MovieSearch($db, $parameters);
     $res = $movieSearch->searchMovie();
-    $MovieContentView = new MovieContentView();
+    $movieContentView = new MovieContentView();
     $rentButton = $movieAdminForm->createRentMovieForm($res, $result);
-    $movie = $MovieContentView->generateMovieContentView($res, $rentButton);
+    $movie = $movieContentView->generateMovieContentView($res, $rentButton);
+    $path = basename($_SERVER['PHP_SELF']) . "?id=$id";
 
 } else {
 
@@ -62,36 +66,48 @@ if ($id) {
 
     $movieSearch = new MovieSearch($db, $parameters);
     $res = $movieSearch->searchMovie();
+    if ($movieSearch->getNumberOfRows() == 1) {
+        $id = $movieSearch->getIdForFirstMovie($res);
+    }
+
     $movieSearchForm = $movieSearch->getMovieSearchForm();
 
     $htmlTable = new HTMLTable();
     $hitsPerPage = $htmlTable->getHitsPerPage(array(2, 4, 8), $hits);
     $navigatePageBar = $htmlTable->getPageNavigationBar($hits, $page, $movieSearch->getMaxNumPages());
-    $movieTable = $htmlTable->generateMovieTable($res, $navigatePageBar);
+    $movieTable = $htmlTable->generateMovieTable($res, $navigatePageBar, $genre);
     $row = $movieSearch->getNumberOfRows();
 
     $sqlDebug = $db->Dump();
 
    $adminForm = $movieAdminForm->generateMovieAdminForm();
 
-   $movie = <<<EOD
-       {$movieSearchForm}
-       {$adminForm}
-       <div class='movie-table'>
-           <div class='table-hits'>{$row} träffar. {$hitsPerPage}</div>
-           {$movieTable}
-       </div>
+    $movie = <<<EOD
+        {$movieSearchForm}
+        {$adminForm}
+        <div class='movie-table'>
+            <div class='table-hits'>{$row} träffar. {$hitsPerPage}</div>
+            {$movieTable}
+        </div>
 EOD;
+
+    $path = basename($_SERVER['PHP_SELF']);
 }
+
+$pathParams = array('id' => $id, 'genre' => $genre);
+$breadcrumb = new Breadcrumb($db, MOIVE_PATH, $pathParams, $menu);
+$breadcrumbNav = $breadcrumb->createMovieBreadcrumb();
 
  // Do it and store it all in variables in the Origo container.
 $origo['title'] = "Filmer";
 $origo['stylesheets'][] = 'css/movie.css';
 $origo['stylesheets'][] = 'css/movie_content.css';
 $origo['stylesheets'][] = 'css/form.css';
+$origo['stylesheets'][] = 'css/breadcrumb.css';
 
 $origo['main'] = <<<EOD
     <article>
+        {$breadcrumbNav}
         <h1>{$origo['title']}</h1>
         {$movie}
     </article>

@@ -16,14 +16,14 @@ class HTMLTable
      * @param  [] $res the result set from the database.
      * @return html the movie table.
      */
-    public function generateMovieTable($res, $pageNav = null)
+    public function generateMovieTable($res, $pageNav = null, $genrePath = null)
     {
         $table = "<table>";
         $table .= $this->createTableHead();
 
         if (isset($res)) {
             if (!empty($res)) {
-                $table .= $this->createTableBody($res);
+                $table .= $this->createTableBody($res, $genrePath);
             } else {
                 $table .= $this->createEmptyTableBodyWithMessage();
             }
@@ -84,14 +84,14 @@ class HTMLTable
         return $isAdminMode;
     }
 
-    private function createTableBody($res)
+    private function createTableBody($res, $genrePath)
     {
         $tableBody = "<tbody>";
         foreach ($res as $key => $row) {
             $tableBody .= "<tr>";
-            $tableBody .= "<td>" . $this->createLink("<img src='img.php?src=" . htmlentities($row->image) . "&amp;width=71&amp;height=100&amp;sharpen' alt='" . htmlentities($row->title) . "'/>", $row->id) . "</td>";
-            $tableBody .= "<td>" . $this->createLink(htmlentities($row->title), $row->id) . "</td>";
-            $tableBody .= "<td>" . $this->createLink($this->getSubstring(htmlentities($row->plot), 260), $row->id) . "</td>";
+            $tableBody .= "<td>" . $this->createLink("<img src='img.php?src=" . htmlentities($row->image) . "&amp;width=71&amp;height=100&amp;sharpen' alt='" . htmlentities($row->title) . "'/>", $row->id, $genrePath) . "</td>";
+            $tableBody .= "<td>" . $this->createLink(htmlentities($row->title), $row->id, $genrePath) . "</td>";
+            $tableBody .= "<td>" . $this->createLink($this->getSubstring(htmlentities($row->plot), 260), $row->id, $genrePath) . "</td>";
             $tableBody .= "<td>" . htmlentities($row->year) . "</td>";
             $tableBody .= "<td>" . htmlentities($row->genre) . "</td>";
             $tableBody .= "<td>" . htmlentities($row->price) . "</td>";
@@ -109,9 +109,18 @@ class HTMLTable
         return $tableBody;
     }
 
-    private function createLink($item, $itemIdInTable)
+    private function createLink($item, $itemIdInTable, $genrePath)
     {
-        return "<a href='?id={$itemIdInTable}'>{$item}</a>";
+        $ref = null;
+
+        if (isset($genrePath))
+        {
+            $ref .= "?genre={$genrePath}&id={$itemIdInTable}";
+        } else {
+            $ref .= "?id={$itemIdInTable}";
+        }
+
+        return "<a href='{$ref}'>{$item}</a>";
     }
 
     private function getSubstring($textString, $numOfChar)

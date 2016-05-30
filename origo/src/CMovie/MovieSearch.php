@@ -98,6 +98,7 @@ class MovieSearch
         $html .= '<legend>Sök</legend>';
         $html .= '<input type=hidden name=hits value="' . htmlentities($this->parameters['hits']) . '"/>';
         $html .= '<input type=hidden name=page value="1"/>';
+        $html .= '<input type=hidden name=genre value="' . $this->parameters['genre'] . '"/>';
         $title = htmlentities($this->parameters['title']);
         $html .= '<p><label>Titel: <input type="search" name="title" value="' . $title . '"/> (delsträng, använd % som *)</label></p>';
         $year1 = htmlentities($this->parameters['year1']);
@@ -301,5 +302,35 @@ class MovieSearch
     public function getMaxNumPages()
     {
         return ceil($this->numOfRows / $this->parameters['hits']);
+    }
+
+    public function getTitleById()
+    {
+        $sql = 'SELECT title FROM Rm_Movie WHERE id = ?';
+
+        if($this->parameters['id']) {
+          $sqlParameters[] = $this->parameters['id'];
+        }
+
+        $res = $this->db->ExecuteSelectQueryAndFetchAll($sql, $sqlParameters);
+
+        if ($res && !empty($res)) {
+            $title = $res[0]->title;
+        } else {
+            $title = null;
+        }
+
+        return $title;
+    }
+
+    public function getIdForFirstMovie($res)
+    {
+        $id = null;
+
+        if (isset($res) && !empty($res)) {
+            $id = $res[0]->id;
+        }
+
+        return $id;
     }
 }
