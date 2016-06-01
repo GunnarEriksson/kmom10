@@ -12,7 +12,7 @@
 <body>
   <div id='wrapper'>
     <div id='header'><?=$header?></div>
-    <div id='navbar'><?= getNavbar($menu) ?></div>
+    <div id='navbar'><?= getNavbar($menu)?><?= getSearchMovieTitleForm()?></div>
     <div id='main'><?=$main?></div>
     <div id='footer'><?=$footer?></div>
   </div>

@@ -16,9 +16,24 @@
  * A user that has admin rights, could create, edit and delete movies in the
  * database.
  */
- include(__DIR__.'/config.php');
+include(__DIR__.'/config.php');
 
- define('MOIVE_PATH', __DIR__ . DIRECTORY_SEPARATOR . 'movie');
+define('MOIVE_PATH', __DIR__ . DIRECTORY_SEPARATOR . 'movie');
+
+/**
+ * Adds characters to the title.
+ *
+ * Adds characters to the title
+ *
+ * @param string $title the title with characters added.
+ */
+function addCharToTitle($title, $char)
+{
+    $title = $char . $title;
+    $title .= $char;
+
+    return $title;
+}
 
 /**
  * Generates breadcrumb navigation.
@@ -32,14 +47,14 @@
  *
  * @return html the breadcrumb navigation list.
  */
- function generateBreadcrumbNavigation($db, $id, $genre, $menu)
- {
-     $pathParams = array('id' => $id, 'genre' => $genre);
-     $breadcrumb = new Breadcrumb($db, MOIVE_PATH, $pathParams, $menu);
-     $breadcrumbNav = $breadcrumb->createMovieBreadcrumb();
+function generateBreadcrumbNavigation($db, $id, $genre, $menu)
+{
+    $pathParams = array('id' => $id, 'genre' => $genre);
+    $breadcrumb = new Breadcrumb($db, MOIVE_PATH, $pathParams, $menu);
+    $breadcrumbNav = $breadcrumb->createMovieBreadcrumb();
 
-     return $breadcrumbNav;
- }
+    return $breadcrumbNav;
+}
 
 /**
  * Generates movie table table container
@@ -59,30 +74,43 @@
  *
  * @return html the movie table container.
  */
- function generateMovieTableContentContainer($movieSearchForm, $adminForm, $row, $hitsPerPage, $movieTable)
- {
-     $movie = <<<EOD
-         {$movieSearchForm}
-         {$adminForm}
-         <div class='movie-table'>
-             <div class='table-hits'>{$row} träffar. {$hitsPerPage}</div>
-             {$movieTable}
-         </div>
+function generateMovieTableContentContainer($movieSearchForm, $adminForm, $row, $hitsPerPage, $movieTable)
+{
+    $movie = <<<EOD
+        {$movieSearchForm}
+        {$adminForm}
+        <div class='movie-table'>
+            <div class='table-hits'>{$row} träffar. {$hitsPerPage}</div>
+            {$movieTable}
+        </div>
 EOD;
 
     return $movie;
- }
+}
 
- function generateMovieContentInformationView($movieAdminForm, $res, $result)
- {
-     $movieContentView = new MovieContentView();
-     $rentButton = $movieAdminForm->createRentMovieForm($res, $result);
-     $movieContentInfo = $movieContentView->generateMovieContentView($res, $rentButton);
+/**
+ * Generate movie content information view.
+ *
+ * Creates the movie content information view where the movie is presented in
+ * detail with links to Imdb and Youtube. If the user has logged in, it will
+ * be possible to rent the movie.
+ *
+ * @param  MovieAdminForm $movieAdminForm   the moive admin form object.
+ * @param  [] $res                          details of the movie from the database.
+ * @param  string $result                   the result of renting the movie.
+ *
+ * @return html  the movie content information view.
+ */
+function generateMovieContentInformationView($movieAdminForm, $res, $result)
+{
+    $movieContentView = new MovieContentView();
+    $rentButton = $movieAdminForm->createRentMovieForm($res, $result);
+    $movieContentInfo = $movieContentView->generateMovieContentView($res, $rentButton);
 
-     return $movieContentInfo;
- }
+    return $movieContentInfo;
+}
 
- // Get parameters
+// Get parameters
 $id       = isset($_GET['id']) ? $_GET['id'] : null;
 $title    = isset($_GET['title']) ? $_GET['title'] : null;
 $hits     = isset($_GET['hits'])  ? $_GET['hits']  : 8;
@@ -93,7 +121,14 @@ $orderby  = isset($_GET['orderby']) ? strtolower($_GET['orderby']) : 'id';
 $order    = isset($_GET['order'])   ? strtolower($_GET['order'])   : 'asc';
 $genre    = isset($_GET['genre']) ? $_GET['genre'] : null;
 $result   = isset($_GET['result'])  ? $_GET['result'] : null;
+$substringChar = isset($_GET['substring'])  ? $_GET['substring'] : null;
 $path = isset($_GET['path']) ? $_GET['path'] : null;
+
+// Increase the possibility to get a match when the search for movie
+// comes from the header search.
+if (isset($substringChar)) {
+    $title = addCharToTitle($title, $substringChar);
+}
 
 $parameters = array(
     'id' => $id,

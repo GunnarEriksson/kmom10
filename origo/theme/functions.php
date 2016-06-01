@@ -174,3 +174,16 @@ function shouldHideNonUserNavBarItems($item)
 
     return $shouldHide;
 }
+
+function getSearchMovieTitleForm()
+{
+    $searchMovieTitleForm = <<<EOD
+    <form class="search-movie-form" action="movie.php">
+        <input type="hidden" name="substring" value="%"/>
+        <input type="search" name="title" value="" placeholder="Ange filmtitel">
+        <input type="submit" value="Sök">
+    </form>
+EOD;
+
+    return $searchMovieTitleForm;
+}
