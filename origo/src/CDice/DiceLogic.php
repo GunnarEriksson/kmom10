@@ -69,6 +69,13 @@ class DiceLogic
         }
     }
 
+    /**
+     * Helper function to check if user has user rights.
+     *
+     * Checks if a user has logged in.
+     *
+     * @return boolean true if the user has logged in, false otherwise.
+     */
     private function isUserMode()
     {
         $isAdminMode = false;
@@ -80,6 +87,13 @@ class DiceLogic
         return $isAdminMode;
     }
 
+    /**
+     * Helper function to check if the game has finished.
+     *
+     * Checks if the saved and unsaved score is 100 or more.
+     *
+     * @return boolean true if score is 100 or more, false otherwise.
+     */
     private function isGameFinished()
     {
         $isGameFinished = false;
@@ -92,6 +106,14 @@ class DiceLogic
         return $isGameFinished;
     }
 
+    /**
+     * Helper function to end the game.
+     *
+     * Checks if the flag has won i set. If set, calls the method to
+     * calculate the final score and send a meesage to the player.
+     *
+     * @return void.
+     */
     private function endGame()
     {
         $this->hasWon = true;
@@ -99,12 +121,28 @@ class DiceLogic
         $this->setMessageToPlayer();
     }
 
+    /**
+     * Helper function to calculate the final score.
+     *
+     * Adds a bonus of 100 points to the score and check if the score is
+     * zero or greater. If not, the final score is set to zero.
+     *
+     * @return void.
+     */
     private function calculatePoints()
     {
         $this->points += 100;
         $this->points = $this->points < 0 ? 0 : $this->points;
     }
 
+    /**
+     * Helper function to send a message to a player.
+     *
+     * Sets a message for a player. If a player has logged in, the player has
+     * the possiblity to save the score for the competition score board.
+     *
+     * @return void
+     */
     private function setMessageToPlayer()
     {
         if ($this->isUserMode()) {
@@ -181,18 +219,29 @@ class DiceLogic
         return $this->playerMessage;
     }
 
+    /**
+     * Returns if the game has finsished or not.
+     *
+     * Returns the flag hasWon, which have the status if the game has finsished
+     * or not.
+     *
+     * @return boolean true if the game has finished, false otherwise.
+     */
     public function hasGameFinished()
     {
         return $this->hasWon;
     }
 
+    /**
+     * Gets the points of the game.
+     *
+     * Returns the points of the game. To get the final score, the game must
+     * have finsished.
+     *
+     * @return int the score from the game.
+     */
     public function getPoints()
     {
         return $this->points;
-    }
-
-    public function resetPoints()
-    {
-
     }
 }

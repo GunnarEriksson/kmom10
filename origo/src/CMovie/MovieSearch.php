@@ -17,8 +17,9 @@ class MovieSearch
     /**
      * Constructor creating a movie seach form object.
      *
+     * @param Database the database object.
      * @param [] $parameters Array of parameters such as title, hits, page, year1,
-     *                       year2, orderby and order.
+     *                       year2, orderby, order and genre.
      */
     public function __construct($db, $parameters)
     {
@@ -304,6 +305,13 @@ class MovieSearch
         return ceil($this->numOfRows / $this->parameters['hits']);
     }
 
+    /**
+     * Get title by id.
+     *
+     * Gets the title of the movie for a specific id.
+     *
+     * @return string the movie title for the movie with the specified id.
+     */
     public function getTitleById()
     {
         $sql = 'SELECT title FROM Rm_Movie WHERE id = ?';
@@ -323,6 +331,16 @@ class MovieSearch
         return $title;
     }
 
+    /**
+     * Get the id for the first movie in the result from database.
+     *
+     * Returns the id for the first id from the result from the database.
+     *
+     * @param  [] $res the result from the database.
+     *
+     * @return int the id for the first movie in the result from database, null
+     *             otherwise.
+     */
     public function getIdForFirstMovie($res)
     {
         $id = null;

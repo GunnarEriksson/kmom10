@@ -43,6 +43,18 @@ class UserContent
         return $message;
     }
 
+    /**
+     * Helper functio to check mandatory parameters.
+     *
+     * Checks if acronym, name and password is missing. If one or more mandatory
+     * parameters are missing, a message is returned about the problem. Otherwise
+     * null is returned.
+     *
+     * @param  [] $params user profile parameters.
+     *
+     * @return string at success, null is returned. Otherwise a message with the
+     *                problem is returned.
+     */
     private function checkMandatoryParameters($params)
     {
         if (empty($params[0])) {
@@ -58,6 +70,18 @@ class UserContent
         return $message;
     }
 
+    /**
+     * Helper function to add a user to the database.
+     *
+     * Adds a user to the database and returns a message that the user is welcome
+     * to Rental Movies. The function handles account could not be created, acronym
+     * already exists and password could not be created. At failure, a message is
+     * returned.
+     *
+     * @param [] $params user profile parameters.
+     *
+     * @return a message if an account could be created or not.
+     */
     private function addUserToDb($params)
     {
         $sql = '
@@ -75,7 +99,7 @@ class UserContent
             if ($resPassword) {
                 $message = 'Välkommen till Rental Movies. Du kan nu logga in med ditt id och lösenord.';
             } else {
-                $message = 'Konto kunde ej skapas!<br><pre>' . print_r($this->db->ErrorInfo(), 1) . '</pre>';
+                $message = 'Konto kunde ej skapas. Lösenord kunde inte skapas!<br><pre>' . print_r($this->db->ErrorInfo(), 1) . '</pre>';
             }
 
 
@@ -91,6 +115,16 @@ class UserContent
         return $message;
     }
 
+    /**
+     * Helper function to create a password.
+     *
+     * Updates the database with a password for a user. Encrypted with salt.
+     *
+     * @param  string $acronym  the acronym of the user.
+     * @param  string $password the password the user has chosen.
+     *
+     * @return boolean true if the passord was created successfully, false otherwise.
+     */
     private function createPassword($acronym, $password)
     {
         $passwordParams = array($password, $acronym);
@@ -103,6 +137,17 @@ class UserContent
         return $this->db->ExecuteQuery($sql, $passwordParams, true);
     }
 
+    /**
+     * Update user profile in database.
+     *
+     * Edits a user in the database and returns a message that the user profile
+     * has been updated. The function handles account could not be updated, password
+     * could not be updated and acronym already exists.
+     *
+     * @param [] $params user profile parameters.
+     *
+     * @return a message if an account could be updated or not.
+     */
     public function updateUserInDb($params)
     {
         // Should password be changed.
@@ -130,7 +175,7 @@ class UserContent
                 if ($resPassword) {
                     $message = 'Kontot har uppdaterats och nytt lösenord har skapats';
                 } else {
-                    $message = 'Konto kunde ej uppdateras!<br><pre>' . print_r($this->db->ErrorInfo(), 1) . '</pre>';
+                    $message = 'Lösenord kunde ej uppdateras!<br><pre>' . print_r($this->db->ErrorInfo(), 1) . '</pre>';
                 }
             } else {
                 $message = 'Kontot har uppdaterats';
@@ -147,6 +192,15 @@ class UserContent
         return $message;
     }
 
+    /**
+     * Deletes an user in the database.
+     *
+     * Deletes an user in the database based on the id for the user.
+     *
+     * @param  [] $params the id for the user to delete.
+     *
+     * @return [] the message if the user could be deleted or not.
+     */
     public function deleteUserInDb($params)
     {
         $sql = 'DELETE FROM Rm_User WHERE id = ?';

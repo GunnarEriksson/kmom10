@@ -48,7 +48,7 @@ $res = $diceScoreBoard->getScoreBoardResults(5);
 $saveScoreButton = $diceScoreBoard->generateSaveScoreButton($message);
 
 $htmlTable = new HTMLTable();
-$scoreBoard = $htmlTable->generateScoreBoardTable($res, 5);
+$scoreBoard = $htmlTable->generateScoreboardTable($res, 5);
 
 // Do it and store it all in variables in the Origo container.
 $origo['title'] = "Tävling";

@@ -13,30 +13,42 @@ class HTMLTable
      * 'År' and 'Genre'. Id, Titel and År have arrows so the movies can be
      * sorted in ascending or descending order in those columns.
      *
-     * @param  [] $res the result set from the database.
+     * @param [] $res           the result set from the database.
+     * @param html $pageNav     the page navigation bar. Default null.
+     * @param string $genrePath the genre path to use in the link for breadcrumb
+     *                          navigation.
+     *
      * @return html the movie table.
      */
     public function generateMovieTable($res, $pageNav = null, $genrePath = null)
     {
         $table = "<table>";
-        $table .= $this->createTableHead();
+        $table .= $this->createMovieTableHead();
 
         if (isset($res)) {
             if (!empty($res)) {
-                $table .= $this->createTableBody($res, $genrePath);
+                $table .= $this->createMovieTableBody($res, $genrePath);
             } else {
                 $table .= $this->createEmptyTableBodyWithMessage();
             }
         } else {
             $table .= $this->createEmptyTableBodyWithErrorMessage();
         }
-        $table .= $this->createTableFooter($pageNav);
+        $table .= $this->createMovieTableFooter($pageNav);
         $table .= "</table>";
 
         return $table;
     }
 
-    private function createTableHead()
+    /**
+     * Helper function to create the table head for movie table.
+     *
+     * Creates the table head for the movie table. Gets an extra column for
+     * administration if the user has admin rights.
+     *
+     * @return html the table head for movie table.
+     */
+    private function createMovieTableHead()
     {
         $tableHead = "<thead>";
         $tableHead .= "<tr>";
@@ -61,6 +73,7 @@ class HTMLTable
      * Function to create links for sorting
      *
      * @param string $column the name of the database column to sort by
+     *
      * @return string with links to order by column.
      */
     private function orderby($column)
@@ -71,6 +84,13 @@ class HTMLTable
         return "<span class='orderby'>" . $nav . "</span>";
     }
 
+    /**
+     * Helper function to check if the user has admin rights
+     *
+     * Checks if the user has logged in as admin.
+     *
+     * @return boolean true if the user has admin rights, false otherwise.
+     */
     private function isAdminMode()
     {
         $isAdminMode = false;
@@ -84,7 +104,18 @@ class HTMLTable
         return $isAdminMode;
     }
 
-    private function createTableBody($res, $genrePath)
+    /**
+     * Helper function to create the table body for the movie table.
+     *
+     * Creates the table body for the movie table. Adds the possibility to edit
+     * and remove a movie, if the user has admin rights.
+     *
+     * @param  [] $res              the result from the database.
+     * @param  string $genrePath    genre added in the link for breadcrumb navigation.
+     *
+     * @return html the table body for the movie table.
+     */
+    private function createMovieTableBody($res, $genrePath)
     {
         $tableBody = "<tbody>";
         foreach ($res as $key => $row) {
@@ -109,6 +140,17 @@ class HTMLTable
         return $tableBody;
     }
 
+    /**
+     * Helper function to surround an item with a link.
+     *
+     * Creates a link around an item.
+     *
+     * @param  var $item            the item to sourround a link to.
+     * @param  int $itemIdInTable   the id to a movie, acts as a path.
+     * @param  string $genrePath    the genre of the movie, acts as an path.
+     *
+     * @return htmml the item surounded with a link.
+     */
     private function createLink($item, $itemIdInTable, $genrePath)
     {
         $ref = null;
@@ -123,6 +165,18 @@ class HTMLTable
         return "<a href='{$ref}'>{$item}</a>";
     }
 
+    /**
+     * Helper function to get a substring of a string.
+     *
+     * Returns specified part of an text. A helper function checks the next nearest
+     * space in the text for the specified length to prevent a word to be
+     * truncated.
+     *
+     * @param  string $textString   the string to be truncated.
+     * @param  int $numOfChar       the maximum length of the text.
+     *
+     * @return string               the truncated text.
+     */
     private function getSubstring($textString, $numOfChar)
     {
         $textEndPos = $this->getSpacePosInString($textString, $numOfChar);
@@ -136,6 +190,16 @@ class HTMLTable
         return $text;
     }
 
+    /**
+     * Helper function to find the next space in a string.
+     *
+     * Finds the next space from the specified position.
+     *
+     * @param  string $textString   the text string to find a space in.
+     * @param  int $offset          the position to find the next space from.
+     *
+     * @return int the position of the next space from the specified position.
+     */
     private function getSpacePosInString($textString, $offset)
     {
         $pos = 0;
@@ -146,7 +210,18 @@ class HTMLTable
         return $pos;
     }
 
-    private function createEmptyTableBodyWithErrorMessage()
+    /**
+     * Helper function to create a table body with an error message only.
+     *
+     * Creates an empty table body with the error message no connection with the
+     * database or database has no contents. Number of columns depends if the user
+     * has admin rights or not. If the user has admin rights, there is an extra
+     * column for administration.
+     *
+     * @return html a table body containing the error message no connction with
+     *              the database or database has no content.
+     */
+    private function createEmptyTableBodyWithErrorMessage($spanNormal, $spanAdmin)
     {
         $tableBody = "<tbody>";
         if ($this->isAdminMode()) {
@@ -159,6 +234,16 @@ class HTMLTable
         return $tableBody;
     }
 
+    /**
+     * Helper function to create a table body with a message.
+     *
+     * Creates an empty table body with the message no search result matched
+     * your search. Number of columns depends if the user has admin rights or not.
+     * If the user has admin rights, there is an extra column for administration.
+     *
+     * @return html a table body containing the message o search result matched
+     *              your search.
+     */
     private function createEmptyTableBodyWithMessage()
     {   $tableBody = "<tbody>";
         if ($this->isAdminMode()) {
@@ -171,7 +256,18 @@ class HTMLTable
         return $tableBody;
     }
 
-    private function createTableFooter($pageNav)
+    /**
+     * Helper function to create a movie table footer.
+     *
+     * Creates a table footer for a movie table. Number of columns depends if
+     * the user has admin rights or not. If the user has admin rights, there is
+     * an extra column for administration.
+     *
+     * @param  html $pageNav the navigation bar for page navigation.
+     *
+     * @return html the table footer for the movie table.
+     */
+    private function createMovieTableFooter($pageNav)
     {
         $tableFooter = "<tfoot>";
         $tableFooter .= "<tr>";
@@ -191,8 +287,9 @@ class HTMLTable
     /**
      * Use the current querystring as base, modify it according to $options and return the modified query string.
      *
-     * @param array $options to set/change.
-     * @param string $prepend this to the resulting query string
+     * @param array $options    to set/change.
+     * @param string $prepend   this to the resulting query string
+     *
      * @return string with an updated query string.
      */
     public function getQueryString($options=array(), $prepend='?')
@@ -211,8 +308,9 @@ class HTMLTable
     /**
      * Create links for hits per page.
      *
-     * @param array $hits a list of hits-options to display.
-     * @param array $current value.
+     * @param array $hits       a list of hits-options to display.
+     * @param array $current    current value, default null
+     * .
      * @return string as a link to this page.
      */
     public function getHitsPerPage($hits, $current=null)
@@ -307,18 +405,37 @@ class HTMLTable
         return $nav;
     }
 
-    public function generateScoreBoardTable($res, $minNumOfRows)
+    /**
+     * Generates the scoreboard table.
+     *
+     * Creates the scoreboard table for game results.
+     *
+     * @param  [] $res the result from the database.
+     * @param  [] $minNumOfRows the minimum number of rows. Used to fill up the
+     *                          table if number of results in db is less than
+     *                          the minimum number of rows.
+     *
+     * @return html the scoreboard table.
+     */
+    public function generateScoreboardTable($res, $minNumOfRows)
     {
         $html = "<table>";
-        $html .= $this->createScoreBoardTableHead();
-        $html .= $this->createScoreBoardTableBody($res, $minNumOfRows);
-        $html .= $this->createMovieTableFooter();
+        $html .= $this->createScoreboardTableHead();
+        $html .= $this->createScoreboardTableBody($res, $minNumOfRows);
+        $html .= $this->createScoreboardTableFooter();
         $html .= "</table>";
 
         return $html;
     }
 
-    private function createScoreBoardTableHead()
+    /**
+     * Helper function to create scoreboard table head.
+     *
+     * Creates the table head for the scoreboard table.
+     *
+     * @return html the scoreboard table head.
+     */
+    private function createScoreboardTableHead()
     {
         $tableHead = "<thead>";
         $tableHead .= "<tr>";
@@ -329,7 +446,18 @@ class HTMLTable
         return $tableHead;
     }
 
-    private function createScoreBoardTableBody($res, $minNumOfRows)
+    /**
+     * Helper function to create scoreboard table body.
+     *
+     * Creates the scoreboard table body. If the number of results in db is less
+     * than minimum number of rows, the table is filled with "-".
+     *
+     * @param  [] $res the result from the database.
+     * @param  int $minNumOfRows the minimum number of rows in the table.
+     *
+     * @return html the scoreboard table body.
+     */
+    private function createScoreboardTableBody($res, $minNumOfRows)
     {
         $counter = 0;
 
@@ -356,7 +484,14 @@ class HTMLTable
         return $tableBody;
     }
 
-    private function createMovieTableFooter()
+    /**
+     * Helper function to create scoreboard table footer.
+     *
+     * Creates the scoreboard table footer.
+     *
+     * @return html the scoreboard table footer.
+     */
+    private function createScoreboardTableFooter()
     {
         $tableFooter = "<tfoot>";
         $tableFooter .= "<tr>";
@@ -367,6 +502,18 @@ class HTMLTable
         return $tableFooter;
     }
 
+    /**
+     * Generates the user table.
+     *
+     * Creates the table for all users of the Rental Movies.
+     * If no contact with database could be established, no content found in db or
+     * no user with a specific id found, the user is noticed.
+     *
+     * @param  [] $res          the result from the database.
+     * @param  html $pageNav    the navigation bar used at paging.
+     *
+     * @return html the user table for all users of the Rental Moives.
+     */
     public function generateUserTable($res, $pageNav = null)
     {
         $table = "<table>";
@@ -387,6 +534,14 @@ class HTMLTable
         return $table;
     }
 
+    /**
+     * Helper function to create table heder for user tables.
+     *
+     * Creates a user table header with the possiblity to order the table
+     * based on acronyms or names.
+     *
+     * @return html the user table header.
+     */
     private function createUserTableHead()
     {
         $tableHead = "<thead>";
@@ -404,6 +559,16 @@ class HTMLTable
         return $tableHead;
     }
 
+    /**
+     * Helper function to create table user body.
+     *
+     * Creates a table body for users with icons to be able to update or delete
+     * users.
+     *
+     * @param  [] $res the result from the database.
+     *
+     *@return html the usr table body.
+     */
     private function createUserTableBody($res)
     {
         $tableBody = "<tbody>";
@@ -427,7 +592,16 @@ class HTMLTable
         return $tableBody;
     }
 
-    private function createEmptyUsrTableBodyWithErrorMessage()
+    /**
+     * Helper function to create a table body with an error message only for users.
+     *
+     * Creates an empty table body with the error message no connection with the
+     * database or database has no contents.
+     *
+     * @return html a table body containing the error message no connction with
+     *              the database or database has no content.
+     */
+    private function createEmptyUserTableBodyWithErrorMessage()
     {
         $tableBody = "<tbody>";
         $tableBody .= "<td colspan = '8'><span class='message'>Ingen kontakt med databas eller databas saknar innehåll</span></td>";
@@ -444,6 +618,15 @@ class HTMLTable
         return $tableBody;
     }
 
+    /**
+     * Helper method to creat user table footer.
+     *
+     * Creates table footer for the user table.
+     *
+     * @param  html $pageNav the navigation bar for paging.
+     *
+     * @return html the table footer for user table.
+     */
     private function createUserTableFooter($pageNav)
     {
         $tableFooter = "<tfoot>";

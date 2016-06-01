@@ -51,6 +51,14 @@ class Blog
         return $default;
     }
 
+    /**
+     * Helper function to create basic search query.
+     *
+     * Creates an basic search query, which can be modified for specific
+     * purposes.
+     *
+     * @return sql the basic search query.
+     */
     private function createOriginalSqlQuery()
     {
         $sqlOrig = '
@@ -67,8 +75,9 @@ class Blog
      * Returns the blog post defined by the slug. If no slug is defined, all
      * available blog posts is returned.
      *
-     * @param  string $slug the slug that points out the blog post.
-     * @param  Textfilter $textFilter the textfilter obect for text filtering.
+     * @param  string $slug             the slug that points out the blog post.
+     * @param  Textfilter $textFilter   the textfilter obect for text filtering.
+     * @param  string                   the category for the news blog post.
      *
      * @return html the blog post or all blog posts, if no slug is defined.
      */
@@ -88,14 +97,12 @@ class Blog
     }
 
     /**
-     * Helper funktion to prepare the SQL query.
+     * Helper funktion to prepare a query to search for news blog posts.
      *
-     * Prepares the SQL query to get all blog posts or one blog post, if a slug
-     * is defined.
+     * Prepares the query to search for news blog posts depending on the
+     * parameters.
      *
-     * @param  string $slug the slug to point out a specific blog post.
-     *
-     * @return SQL string the string to find blog post or all blog posts.
+     * @return [] the SQL string and parameters to search for news blog posts.
      */
     private function prepareSqlQury()
     {
@@ -108,6 +115,14 @@ class Blog
         return array('sql' => $sql, 'params' => $query['params']);
     }
 
+    /**
+     * Helper function to prepare the query and parameters.
+     *
+     * Prepares the query depending on the parameters sent to the parent function.
+     * The parameters specifies the search for new blog posts in db.
+     *
+     * @return [] the WHERE SQL parameters and their values.
+     */
     private function prepareQueryAndParams()
     {
         $where = null;
@@ -151,12 +166,13 @@ class Blog
      * Helper function to get blog post(s) from database.
      *
      * Sends a query to get all blog post or one specfic blog post, if a slug
-     * is defined.
+     * is defined. Sends a request to check the number of blogs and sets the
+     * parameter number of blogs. If no result is found, an unexpected value
+     * exceptions is thrown.
      *
-     * @param  SQL string $sql the string to search for blog post(s).
-     * @param  string $slug the slug to point out a specific blog post.
+     * @param  []  $query the query with the SQL string and values for the search.
      *
-     * @return [] array which includes information about the blog post(s).
+     * @return [] the result from the database.
      */
     private function getBlogsFromDb($query)
     {
@@ -197,10 +213,12 @@ class Blog
      * Helper function to create the blog post(s).
      *
      * Creates an HTML section wich presents all the blog posts or one specific
-     * blog post if a slug is defined.
+     * blog post if a slug is defined. Adds posibility to update and delete
+     * blog posts depending of the rights of the logged in user.
      *
-     * @param  [] $blogs array of blog post(s) information
-     * @param  Textfilter $textFilter the textfilter obect for text filtering.
+     * @param  [] $blogs                array of blog post(s) information
+     * @param  Textfilter $textFilter   the textfilter obect for text filtering.
+     * @param string $category          the category of the blog post(s).
      *
      * @return html the section with blog post(s) information.
      */
@@ -266,6 +284,18 @@ EOD;
         return $html;
     }
 
+    /**
+     * Helper function to get a substring of a string.
+     *
+     * Returns specified part of an text. A helper function checks the next nearest
+     * space in the text for the specified length to prevent a word to be
+     * truncated.
+     *
+     * @param  string $textString   the string to be truncated.
+     * @param  int $numOfChar       the maximum length of the text.
+     *
+     * @return string               the truncated text.
+     */
     private function getSubstring($textString, $numOfChar)
     {
         $textEndPos = $this->getSpacePosInString($textString, $numOfChar);
@@ -279,6 +309,18 @@ EOD;
         return $text;
     }
 
+    /**
+     * Helper function to create a link.
+     *
+     * Creates a link (reference). Checks if the category should be added to
+     * the reference.
+     *
+     * @param  var $item   the item to make a link of.
+     * @param  string $slug the slug which is used as id of the blog posts.
+     * @param  string $category the category the blogpost belongs to.
+     *
+     * @return html the item surrounded with a link.
+     */
     private function createLink($item, $slug, $category)
     {
         $ref = null;
@@ -295,6 +337,16 @@ EOD;
         return "<a href='{$ref}'>{$item}</a>";
     }
 
+    /**
+     * Helper function to find the next space in a string.
+     *
+     * Finds the next space from the specified position.
+     *
+     * @param  string $textString   the text string to find a space in.
+     * @param  int $offset          the position to find the next space from.
+     *
+     * @return int the position of the next space from the specified position.
+     */
     private function getSpacePosInString($textString, $offset)
     {
         $pos = 0;
@@ -305,6 +357,16 @@ EOD;
         return $pos;
     }
 
+    /**
+     * Helper function to check if the user has admin rights.
+     *
+     * Checks if the user has admin rights. If the user is not admin, the user
+     * must be the author of the blog post(s).
+     *
+     * @param  string  $author the author of the blog post(s).
+     *
+     * @return boolean true if the user has admin rights for the blog post(s).
+     */
     private function hasAdminRights($author)
     {
         $isAdminMode = false;
@@ -317,6 +379,15 @@ EOD;
         return $isAdminMode;
     }
 
+    /**
+     * Helper function to get the name for the acronym.
+     *
+     * Contacts the database to get the name for the acronym.
+     *
+     * @param  string $acronym the acronym to get the name of.
+     * @return string the name for the acronym. The name is cleaned with the
+     *                htmlentities function.
+     */
     private function getNameFromAcronym($acronym)
     {
         $sql = ' SELECT name FROM Rm_User WHERE acronym = ?';
@@ -418,6 +489,13 @@ EOD;
         return ceil($this->numOfBlogs / $this->parameters['hits']);
     }
 
+    /**
+     * Creates a news blog category form.
+     *
+     * Gets all categories from the database and creates a list of the categories.
+     *
+     * @return html A list of all blog post categories.
+     */
     public function createNewsBlogCategoryForm()
     {
         $html = '<form class="news-blog-category-form">';
@@ -443,6 +521,13 @@ EOD;
         return $html;
     }
 
+    /**
+     * Helper function to fetch all categories from the database.
+     *
+     * Gets all categories from the database.
+     *
+     * @return [] the array of all categories.
+     */
     private function fetchAllCategories()
     {
         $sql = '
@@ -459,6 +544,16 @@ EOD;
         return $categoriesArray;
     }
 
+    /**
+     * Gets the title for a slug.
+     *
+     * Sends a request to the database to get the title of the blog post for
+     * the slug.
+     *
+     * @param  string $slug the slug to find the title for.
+     *
+     * @return string the title for the slug if found, otherwise null.
+     */
     public function getTitleBySlug($slug)
     {
         $sql = 'SELECT title FROM Rm_Content WHERE slug = ?';

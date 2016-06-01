@@ -1,6 +1,6 @@
 <?php
 /**
- * Movie seach, provides a form for searching movies and preparing data base requests.
+ * User seach, provides a form for searching users and preparing data base requests.
  *
  */
 class UserSearch
@@ -30,6 +30,13 @@ class UserSearch
         $this->numOfRows = null;
     }
 
+    /**
+     * Helper method to create default parameters.
+     *
+     * Creates an array of user parameters and the parameters are set to null.
+     *
+     * @return [] the array of default parameters for user search.
+     */
     private function createDefaultParameters()
     {
         $default = array(
@@ -45,6 +52,13 @@ class UserSearch
         return $default;
     }
 
+    /**
+     * Helper method to create an original SQL query for user search.
+     *
+     * Creates a SQL string to us a base when searching for users.
+     *
+     * @return SQL string the original SQL string to search for users.
+     */
     private function createOriginalSqlQuery()
     {
         $sqlOrig = '
@@ -55,6 +69,13 @@ class UserSearch
         return $sqlOrig;
     }
 
+    /**
+     * Generates a user search form to search for users.
+     *
+     * Creates a form to search for users in the database.
+     *
+     * @return html the form to search for users in the database.
+     */
     public function generateUserSearchForm()
     {
         $html = '<form class="user-search-form">';
@@ -74,6 +95,14 @@ class UserSearch
         return $html;
     }
 
+    /**
+     * Searches for user(s) in the database.
+     *
+     * Search user(s) in the database. Send also a request to get the number of
+     * rows. Can be used at paging.
+     *
+     * @return [] the user(s) result from the database.
+     */
     public function searchUser()
     {
         $query = $this->prepareSearchUserQuery();
@@ -93,6 +122,14 @@ class UserSearch
         return $userSearchRes;
     }
 
+    /**
+     * Helper function to prepare the search for user(s).
+     *
+     * Adds SQL parameters to the original SQL search string. Add parameters
+     * related to the added SQL parameters.
+     *
+     * @return [] an array with the SQL string and related parameters.
+     */
     private function prepareSearchUserQuery()
     {
         $sqlOrig = $this->sqlOrig;
@@ -104,6 +141,14 @@ class UserSearch
         return array('sql' => $sql, 'params' => $query['params']);
     }
 
+    /**
+     * Helper function to prepare additional query and related parameters.
+     *
+     * Creates additional SQL parameters with related parameters to create
+     * a specfied query for user to the database.
+     *
+     * @return [] the additional SQL parameters and the related parameters.
+     */
     private function prepareQueryAndParams()
     {
         $where = null;
@@ -141,6 +186,15 @@ class UserSearch
         return $query;
     }
 
+    /**
+     * Helper function to prepare number of rows query.
+     *
+     * Creates a query that returns the number of rows of the result. The query
+     * is wrapped around the query to search for user(s) in the database.
+     *
+     * @return [] the SQL parameters and the related parameters to get the number
+     *            of rows.
+     */
     private function prepareNumberOfRowsQuery()
     {
         $query = $this->prepareQueryAndParams();
@@ -184,6 +238,15 @@ class UserSearch
         return ceil($this->numOfRows / $this->parameters['hits']);
     }
 
+    /**
+     * Cleans the user profile parameters.
+     *
+     * Uses the function htmlentities to clean the user profile parameters.
+     *
+     * @param  [] $res the result of the user search from the database.
+     *
+     * @return [] the cleaned user profile parameters.
+     */
     public function cleanProfileParameters($res)
     {
         $params = null;

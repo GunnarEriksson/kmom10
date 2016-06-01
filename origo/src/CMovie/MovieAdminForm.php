@@ -359,6 +359,16 @@ EOD;
         return $output;
     }
 
+    /**
+     * Creates a rent movie form.
+     *
+     * Creates a rent movie form for users to able to rent a movie.
+     *
+     * @param  [] $res the result from the database.
+     * @param  boolean $result the result of the rent.
+     *
+     * @return html the form to rent a movie.
+     */
     public function createRentMovieForm($res, $result)
     {
         $params = $this->getParameterFromFilmWithIdFromDb($res);
@@ -372,6 +382,15 @@ EOD;
         return $output;
     }
 
+    /**
+     * Helper function to create a message of result to rent a Movie.
+     *
+     * Creates a message depending if the rent of a movie was successful or not.
+     *
+     * @param  boolean $result the result of renting a movie.
+     *
+     * @return string a message if the rent was successful or not.
+     */
     private function createMessage($result)
     {
         $message = null;
@@ -387,6 +406,16 @@ EOD;
         return $message;
     }
 
+    /**
+     * Helper function to create a rent a movie form.
+     *
+     * Creates a form to be able to rent a movie.
+     *
+     * @param  [] $params  contains number of rents and the id of the movie.
+     * @param  string $message the result of the rent.
+     *
+     * @return html the rent a movie form.
+     */ 
     private function createRentForm($params, $message)
     {
         $rents = $params['rents'] + 1;

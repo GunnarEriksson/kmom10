@@ -180,6 +180,13 @@ EOD;
         return $output;
     }
 
+    /**
+     * Helper function to add time stamp to a date.
+     *
+     * Adds actual time stamp to a date. The time zone is Europe / Stockholm.
+     *
+     * @param datetime $date the date and time (Europe / Stockholm)
+     */
     private function addTimeStampToDate($date)
     {
         if (strlen($date) > 0 && strlen($date) < 11) {
@@ -430,6 +437,15 @@ EOD;
         return $html;
     }
 
+    /**
+     * Deletes content in the database.
+     *
+     * Deletes content in database using the id as a key.
+     *
+     * @param  [] $params the id for the content to delete.
+     *
+     * @return string a message with the result of deleteing the content.
+     */
     public function eraseContent($params)
     {
         $sql = '

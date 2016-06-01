@@ -10,6 +10,13 @@ class BlogAdminForm
 {
     private $db;
 
+    /**
+     * Constructor
+     *
+     * Initiates the database.
+     *
+     * @param object $db the database object.
+     */
     public function __construct($db=null)
     {
         $this->db = $db;
@@ -51,9 +58,9 @@ EOD;
     }
 
     /**
-     * Helper function to check if the status is admin mode.
+     * Helper function to check if the user has admin rights.
      *
-     * Checks if the user has checked in as admin.
+     * Checks if the user has checed in as admin and has full admin rights.
      *
      * @return boolean true if as user is checked in as admin, false otherwise.
      */
@@ -71,11 +78,14 @@ EOD;
     }
 
     /**
-     * Helper function to check if the status is user mode.
+     * Helper function to check if the user has user rights.
      *
-     * Checks if the user has checked in as user.
+     * Checks if the user has checked in as user. The user has full admin rights
+     * if the user is checked in as admin and can administrate all blog posts.
+     * Other users has restricted rights and is only able to administrate blog
+     * posts that the user has created.
      *
-     * @return boolean true if as user is checked in as user, false otherwise.
+     * @return boolean true if the user has user rights.
      */
     private function isUserMode($user=null)
     {
@@ -102,7 +112,7 @@ EOD;
      *
      * @param string $title   the title in the frame of the form.
      * @param string $message the message if the reset of the database was successful
-     *                        or not.
+     *                        or not. Default value is null.
      *
      * @return html the form to reset the database or a message that you must be
      *              checked in as admin to reset the database.
@@ -128,6 +138,22 @@ EOD;
         return $output;
     }
 
+    /**
+     * Creates a new blog post form to add new blog posts.
+     *
+     * Checks if the user has user rights to to create a blog post form for
+     * adding new blog posts to the database. If the user has not user rights
+     * (not logged in), a message is created to tell that only users that has logged
+     * in can add new blog posts.
+     *
+     * @param  string $title    the title of the form.
+     * @param  string $message  text to present results.
+     * @param  [] $params       parameters to keep the parameters in the form
+     *                          after adding a blog post.
+     * @return html             the form to add new blog posts, if the user has
+     *                          no user rights a message is returned to inform
+     *                          the user to logg in.
+     */
     public function createNewsBlogToDbForm($title, $message, $params=null)
     {
         if ($this->isUserMode()) {
@@ -139,6 +165,17 @@ EOD;
         return $output;
     }
 
+    /**
+     * Helper function to create the blog form to add new or edit blog posts.
+     *
+     * Creates a blog form to create new or edit a blog post.
+     *
+     * @param  string $title    the title of the form.
+     * @param  string $message  text to present results.
+     * @param  [] $params       parameters to keep the parameters in the form
+     *                          after adding or editing a blog post. Default null.
+     * @return html             the form to add new or edit blog posts.
+     */
     private function createNewsBlogForm($title, $message, $params=null)
     {
         $output = <<<EOD
@@ -174,9 +211,9 @@ EOD;
      * Has function to generate radio buttons, where the radio button is already
      * set, for all categories connected to the news blog.
      *
-     * @param  string $category the the category of the news blog.
+     * @param  string $newsBlogCategory the the category of the news blog. Default null
      *
-     * @return html             the radio button.
+     * @return html                     the radio button.
      */
     private function generateCategoryRadioButtons($newsBlogCategory=null)
     {
@@ -197,6 +234,14 @@ EOD;
         return $radioButtons;
     }
 
+    /**
+     * Helper function to fetch all categories from database.
+     *
+     * Gets all categories from the database. The categories are cleaned with the
+     * htmlentities function.
+     *
+     * @return [] All categories for a blog post.
+     */
     private function fetchAllCategories()
     {
         $sql = '
@@ -242,11 +287,11 @@ EOD;
     }
 
     /**
-     * Helper function to get all available genres from database.
+     * Helper function to get all available filter types for a blog post.
      *
-     * Searches for all avaiable genres in the genre table in the database.
+     * Searches for all avaiable filter types for a blog post in the database.
      *
-     * @return [] All avaiable genres in the database.
+     * @return [] All avaiable filter types for a blog post.
      */
     private function fetchFilterTypes()
     {
@@ -290,6 +335,21 @@ EOD;
         return $shouldBeSet;
     }
 
+    /**
+     * Creates a form for editing blog posts.
+     *
+     * Creates a form for editing blog posts. If the user does not has user
+     * rights, the user is informed. If no blog post is found, the user is
+     * informed.
+     *
+     * @param  string $title    the title of the form.
+     * @param  [] $res          the parameter values in the form. To be able to keep the
+     *                          values after the submit.
+     * @param  string $message  message to inform users.
+     *
+     * @return html the form, if successful. Otherwise a message to inform why
+     *              no form was created.
+     */
     public function createEditNewsBlogInDbForm($title, $res, $message=null)
     {
         $params = $this->getParameterFromNewsBlogWithIdFromDb($res);
@@ -306,6 +366,15 @@ EOD;
         return $output;
     }
 
+    /**
+     * Helper function to clean blog form values.
+     *
+     * Cleans values with the htmlentities function before the values are inserted
+     * in the forms.
+     *
+     * @param  [] $res the values for the forms.
+     * @return [] the cleaned values for the forms.
+     */
     private function getParameterFromNewsBlogWithIdFromDb($res)
     {
         $params = null;
@@ -328,6 +397,21 @@ EOD;
         return $params;
     }
 
+    /**
+     * Create form to delete news blog posts.
+     *
+     * Creates a form to be able to delete news blog posts. If the user has no
+     * user rights, the user is informed. If no blog post is found, the user is
+     * informed.
+     *
+     * @param  string $title    the title of the form.
+     * @param  [] $res          the parameter values in the form. To be able to keep the
+     *                          values after the submit.
+     * @param  string $message  message to inform users.
+     *
+     * @return html             the delete blog post form, if successful. Otherwise
+     *                          a message to inform why no form was created.
+     */
     public function createDeleteNewsBlogInDbForm($title, $res, $message)
     {
         $params = $this->getParameterFromNewsBlogWithIdFromDb($res);
@@ -344,6 +428,17 @@ EOD;
         return $output;
     }
 
+    /**
+     * Helper function to create the blog form to delete blog posts.
+     *
+     * Creates a blog form to delete a blog post.
+     *
+     * @param  string $title    the title of the form.
+     * @param  string $message  text to present results.
+     * @param  [] $params       parameters to keep the parameters in the form
+     *                          after deleting a blog post. Default null.
+     * @return html             the form to delete blog posts.
+     */
     private function createDeleteNewsBlogForm($title, $message, $params=null)
     {
         $output = <<<EOD

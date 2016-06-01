@@ -47,7 +47,7 @@ $origo['stylesheets'][] = 'css/form.css';
 // Header
 $origo['main'] = <<<EOD
 <h1>{$origo['title']}</h1>
-{$userAdminForm->createEditUserInDbFrom($origo['title'], $res, $message)}
+{$userAdminForm->createEditUserInDbForm($origo['title'], $res, $message)}
 EOD;
 
 // Finally, leave it all to the rendering phase of Origo.

@@ -7,6 +7,18 @@
 class UserAdminForm
 {
 
+    /**
+     * Creates add user to db form.
+     *
+     * Creates a form to add new users to the database. Parameters that are not
+     * set are set to null.
+     *
+     * @param  string $title    the title of the form.
+     * @param  string $message  the message to a user.
+     * @param  [] $params       parameters for administration of users.
+     *
+     * @return html the form to add new users to the database.
+     */
     public function createAddUserToDbFrom($title, $message, $params=null)
     {
         $default = $this->createDefaultFormParameters();
@@ -15,6 +27,13 @@ class UserAdminForm
         return $this->createUserForm($title, $message, $params);
     }
 
+    /**
+     * Helper function to create default parameters.
+     *
+     * Creates default parameters, which values are set to null.
+     *
+     * @return [] the array of default parameters.
+     */
     private function createDefaultFormParameters()
     {
         $default = array(
@@ -30,6 +49,20 @@ class UserAdminForm
         return $default;
     }
 
+    /**
+     * Helper function to create a user form.
+     *
+     * Creates a user form to add and update users. Protection is added to prevent
+     * acronym and name of the administrator to be changed.
+     *
+     * @param  string $title            the title of the form.
+     * @param  string $message          the message to a user.
+     * @param  [] $params               values for the fields in the form.
+     * @param  string $passwordMessage  notice to only add password if the password
+     *                                  should be changed.
+     *
+     * @return html the form to add or edit users.
+     */
     private function createUserForm($title, $message, $params, $passwordMessage=null)
     {
         $readonly = null;
@@ -43,7 +76,7 @@ class UserAdminForm
                 <legend>{$title}</legend>
                 <input type='hidden' name='id' value="{$params['id']}"/>
                 <p><label>Användarnamn:<br/><input type='text' name='acronym' value="{$params['acronym']}" {$readonly}/></label></p>
-                <p><label>Namn:<br/><input type='text' name='name' value="{$params['name']}"/></label></p>
+                <p><label>Namn:<br/><input type='text' name='name' value="{$params['name']}" {$readonly}/></label></p>
                 <p><label>Information:<br/><textarea name='info'>{$params['info']}</textarea></label></p>
                 <p><label>E-post:<br/><input type='text' name='email' value="{$params['email']}"/></label></p>
                 <p><label>Lösenord {$passwordMessage}:<br/><input type='password' name='password' value="{$params['password']}"/></label></p>
@@ -56,24 +89,20 @@ EOD;
         return $output;
     }
 
-    private function getParameterFromCreateUserForm($formParams)
-    {
-        $params = null;
-        if (isset($formParams) && !empty($formParams)) {
-            $param = $res[0];
-            $params = array(
-                'id' => htmlentities($param->id, null, 'UTF-8'),
-                'acronym' => htmlentities($param->acronym, null, 'UTF-8'),
-                'name' => htmlentities($param->name, null, 'UTF-8'),
-                'info' => htmlentities($param->info, null, 'UTF-8'),
-                'email' => htmlentities($param->email, null, 'UTF-8')
-            );
-        }
-
-        return $params;
-    }
-
-    public function createEditUserInDbFrom($title, $res, $message)
+    /**
+     * Creates a edit user form.
+     *
+     * Creates a form to edit user information for a user. If the edit of an
+     * user fails, the user is informed.
+     *
+     * @param  string $title    the title of the form.
+     * @param  [] $res          the result of users from the database.
+     *
+     * @param  string $message information to the user.
+     *
+     * @return html the form to edit a user.
+     */
+    public function createEditUserInDbForm($title, $res, $message)
     {
         $params = $this->getUserProfileParametersFromDb($res);
         if ($this->isUserMode($params['acronym'])) {
@@ -90,6 +119,16 @@ EOD;
         return $output;
     }
 
+    /**
+     * Helper function to get user profile parameters from database.
+     *
+     * Gets the user profile parameters and cleans the parameters with the
+     * function htmlentities before stored in array.
+     *
+     * @param  [] $res the result of users from the database.
+     *
+     * @return [] the array with cleaned user profile parameters.
+     */
     private function getUserProfileParametersFromDb($res)
     {
         $params = null;
@@ -108,6 +147,17 @@ EOD;
         return $params;
     }
 
+    /**
+     * Helper method to check if the user has user rights.
+     *
+     * Checks if the user has user rights. Admin has full rights and other users
+     * has only rights if the profile has their own acronym. Can only edit their
+     * own profile.
+     *
+     * @param string  $user other user than admin.
+     *
+     * @return boolean true if the user has user rights, false otherwise.
+     */
     private function isUserMode($user=null)
     {
         $isUserMode = false;
@@ -125,6 +175,13 @@ EOD;
         return $isUserMode;
     }
 
+    /**
+     * Generates user form to for admin to create a new user.
+     *
+     * Generates a form for admin to create a new user profile to the database.
+     *
+     * @return html the form for a admin to create new users.
+     */
     public function generateUserAdminForm()
     {
         $form = null;
@@ -162,6 +219,18 @@ EOD;
         return $isAdminMode;
     }
 
+    /**
+     * Creates a delete user form.
+     *
+     * Creates a form for admin to delete users from the databasen. Returns a
+     * message of the result.
+     *
+     * @param  string $title    the title of the form.
+     * @param  [] $res          the result of users from the databasen.
+     * @param  string $message  the information to a admin.
+     *
+     * @return html the form at success, otherwise a message about the problem.
+     */
     public function createDeleteUserInDbFrom($title, $res, $message)
     {
         $params = $this->getUserProfileParametersFromDb($res);
@@ -178,6 +247,17 @@ EOD;
         return $output;
     }
 
+    /**
+     * Helper  function to create a delete user form.
+     *
+     * Creates a form to delete users from the database.
+     *
+     * @param  string $title    the title of the form.
+     * @param  string $message  the information to a admin.
+     * @param  [] $params       the values for the fields in the form.
+     * 
+     * @return html the form to delete users in the database.
+     */
     private function createDeleteUserForm($title, $message, $params)
     {
         $output = <<<EOD

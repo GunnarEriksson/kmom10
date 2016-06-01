@@ -106,6 +106,13 @@ class MovieContentView
         return $isAdminMode;
     }
 
+    /**
+     * Helper function to check if the user has user rights.
+     *
+     * Checks if the user has logged in.
+     *
+     * @return boolean true if the user has user rights, false otherwise.
+     */
     private function isUserMode()
     {
         $isAdminMode = false;
