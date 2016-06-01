@@ -1,8 +1,10 @@
 <?php
 /**
- * This is a Origo pagecontroller to edit content for movies
+ * This is a Origo pagecontroller to edit movies in the database.
  *
- * Contains reports of each section of the course OOPHP.
+ * Handles edit of movies in the database via a form. Only users that
+ * have admin rights (logged in as admin) are allowed to edit movies in the
+ * database.
  */
 include(__DIR__.'/config.php');
 
@@ -32,9 +34,11 @@ $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
 // Check that incoming parameters are valid
 is_numeric($id) or die('Check: Id must be numeric.');
 
+$db = new Database($origo['database']);
+$MovieAdminForm = new MovieAdminForm($db);
+
 $message = null;
 $res = null;
-$db = new Database($origo['database']);
 if (isset($acronym) && (strcmp($acronym , 'admin') === 0)) {
     if ($save) {
         $movieContent = new MovieContent($db);
@@ -49,8 +53,6 @@ if (isset($acronym) && (strcmp($acronym , 'admin') === 0)) {
     $origo['debug'] = $db->Dump();
 }
 
-
-$MovieAdminForm = new MovieAdminForm($db);
 
 $origo['title'] = "Uppdatera filminnehåll";
 $origo['stylesheets'][] = 'css/form.css';

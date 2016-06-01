@@ -1,8 +1,9 @@
 <?php
 /**
- * This is a Origo pagecontroller to delete a page or a blog post.
+ * This is a Origo pagecontroller to delete user profiles in the database.
  *
- * Contains reports of each section of the course OOPHP.
+ * Hamdles the deletion of user profiles in the database. Only a user who has
+ * admin rights (logged in as user), could delete user profiles.
  */
 include(__DIR__.'/config.php');
 
@@ -13,16 +14,18 @@ $name = isset($_POST['name']) ? $_POST['name'] : null;
 $info = isset($_POST['info']) ? $_POST['info'] : null;
 $email = isset($_POST['email']) ? $_POST['email'] : null;
 $delete  = isset($_POST['delete'])  ? true : false;
+$user = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
 
 // Check that incoming parameters are valid
 is_numeric($id) or die('Check: Id must be numeric.');
 
+$userAdminForm = new UserAdminForm();
+
 $message = null;
 $res = null;
-$db = new Database($origo['database']);
-
-if (isset($acronym) && (strcmp($acronym , 'admin') === 0)) {
+if (isset($user) && (strcmp($user , 'admin') === 0)) {
     if ($delete) {
+        $db = new Database($origo['database']);
         $userContent = new UserContent($db);
         $params = array($acronym, $name, $info, $email, $id);
         $message = $userContent->deleteUserInDb($params);
@@ -34,8 +37,6 @@ if (isset($acronym) && (strcmp($acronym , 'admin') === 0)) {
 
     $origo['debug'] = $db->Dump();
 }
-
-$userAdminForm = new UserAdminForm();
 
 $origo['title'] = "Radera användareprofil";
 $origo['stylesheets'][] = 'css/form.css';

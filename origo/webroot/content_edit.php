@@ -2,12 +2,11 @@
 /**
  * This is a Origo pagecontroller to edit content for pages and blog posts
  *
- * Contains reports of each section of the course OOPHP.
+ * Edits a blog post from the news page. If user has admin rights, all blog
+ * posts can be edited. If the user has user rights, only blog posts that the
+ * user has created can be edited.
  */
 include(__DIR__.'/config.php');
-
-$db = new Database($origo['database']);
-$content = new Content($db);
 
 // Get parameters
 $id     = isset($_POST['id'])    ? strip_tags($_POST['id']) : (isset($_GET['id']) ? strip_tags($_GET['id']) : null);
@@ -27,13 +26,17 @@ $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
 // Check that incoming parameters are valid
 is_numeric($id) or die('Check: Id must be numeric.');
 
+$db = new Database($origo['database']);
+$blogAdminForm = new BlogAdminForm($db);
 $message = null;
 $res = null;
+
 if (isset($acronym)) {
+    $content = new Content($db);
+
     if ($save && ((strcmp($acronym , 'admin') === 0) || (strcmp($acronym , $author) === 0))) {
         $url = empty($url) ? null : $url;
         $slug = empty($slug) ? null : $slug;
-        $content = new Content($db);
         $user = new User($db);
         $author = $user->getAcronym();
         $params = array($title, $slug, $url, $data, $type, $filter, $author, $category, $published, $deleted, $id);
@@ -44,8 +47,6 @@ if (isset($acronym)) {
 
     $origo['debug'] = $db->Dump();
 }
-
-$blogAdminForm = new BlogAdminForm($db);
 
 $origo['title'] = "Uppdatera nyheter";
 $origo['stylesheets'][] = 'css/form.css';

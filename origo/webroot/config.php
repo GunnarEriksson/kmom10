@@ -42,12 +42,14 @@ session_start();
  */
 $origo = array();
 
+
 /**
  * Theme related settings.
  *
  */
 $origo['stylesheets'][] = 'css/style.css';
-$origo['favicon']    = 'img/favicon/favicon.ico';
+$origo['favicon']       = 'img/favicon/favicon.ico';
+
 
 /**
  * Site wide settings.
@@ -64,81 +66,83 @@ EOD;
 
 /**
  * The webpages for this website. Used by the navigation bar.
- *
  */
 $menu = array(
     // Use for styling the menu
     'class' => 'navbar',
 
-    // Here comes the menu structure
+    // The menu structure
     'items' => array(
-        // This is a menu item
+        // Home menu item
         'home'  => array(
             'text'  =>'Hem',
             'url'   =>'index.php',
             'title' => 'Hem'
         ),
 
-        // This is a menu item
+        // Movies menu item
         'movies'  => array(
             'text'  =>'Filmer',
             'url'   =>'movie.php',
             'title' => 'Filmer'
         ),
 
-        // This is a menu item
+        // News menu item
         'news'  => array(
             'text'  =>'Nyheter',
             'url'   =>'news_blog.php',
             'title' => 'Nyheter'
         ),
 
-        // This is a menu item
+        // Calendar menu item
         'calendar'  => array(
             'text'  =>'Kalender',
             'url'   =>'calendar.php',
             'title' => 'Kalender'
         ),
 
-        // This is a menu item
+        // Game menu item
         'dice'  => array(
             'text'  =>'Tävling',
             'url'   =>'dice.php',
             'title' => 'Tävling'
         ),
 
-        // This is a menu item
+        // About RM menu item
         'about'  => array(
             'text'  =>'Om RM',
             'url'   =>'about.php',
             'title' => 'Om RM'
         ),
 
-        // This is a menu item
+        // Login menu item is only shown in navigation bar when no user has logged
+        // in.
         'login'  => array(
             'text'  =>'Logga in',
             'url'   =>'login.php',
             'title' => 'Logga in'
         ),
 
-        // This is a menu item
+        // Account menu item is only shown for a user who has logged in and user
+        // is not admin. If no user has logged in, the login item is shown in
+        // the navigation bar.
         'account'  => array(
             'text'  =>'Konto',
             'url'   =>'',
             'title' => '',
 
-            // Here we add the submenu, with some menu items, as part of a existing menu item
+            // Submenu, with some menu items, as part of a existing menu item
             'submenu' => array(
 
                 'items' => array(
-                    // This is a menu item of the submenu
+                    // Profile menu item of the submenu
                     'item 1'  => array(
                         'text'  => 'Profil',
                         'url'   => 'user_profile.php',
                         'title' => 'Profil'
                     ),
 
-                    // This is a menu item of the submenu
+                    // Logout menu item of the submenu
                     'item 2'  => array(
                         'text'  => 'Logga ut',
                         'url'   => 'logout.php',
@@ -148,31 +152,33 @@ $menu = array(
             ),
         ),
 
-        // This is a menu item
+        // Admin menu item is only shown for a user who has logged in as admin.
+        // If no user has logged in as admin, the login item is shown in the
+        // navigation bar.
         'admin'  => array(
             'text'  =>'Admin',
             'url'   =>'',
             'title' => '',
 
-            // Here we add the submenu, with some menu items, as part of a existing menu item
+            // Submenu, with some menu items, as part of a existing menu item
             'submenu' => array(
 
                 'items' => array(
-                    // This is a menu item of the submenu
+                    // Proflie menu item of the submenu
                     'item 1'  => array(
                         'text'  => 'Profil',
                         'url'   => 'user_profile.php',
                         'title' => 'Profil'
                     ),
 
-                    // This is a menu item of the submenu
+                    // Account menu item of the submenu
                     'item 1'  => array(
                         'text'  => 'Konton',
                         'url'   => 'user_admin.php',
                         'title' => 'Konton'
                     ),
 
-                    // This is a menu item of the submenu
+                    // Logout menu item of the submenu
                     'item 3'  => array(
                         'text'  => 'Logga ut',
                         'url'   => 'logout.php',
@@ -193,7 +199,6 @@ $menu = array(
 
  /**
  * Settings for the database.
- *
  */
 if (isset($_SERVER['REMOTE_ADDR'])) {
     if($_SERVER['REMOTE_ADDR'] == '::1') {

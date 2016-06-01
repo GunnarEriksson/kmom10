@@ -1,8 +1,8 @@
 <?php
 /**
- * This is a Origo pagecontroller to add new users to the database.
+ * This is a Origo pagecontroller to show a user profile.
  *
- * Contains reports of each section of the course OOPHP.
+ * Shows a user profile and has a button if the user wants to edit the profile.
  */
 include(__DIR__.'/config.php');
 

@@ -2,7 +2,7 @@
 /**
  * This is a Origo pagecontroller to add news blogs to the database.
  *
- * Contains reports of each section of the course OOPHP.
+ * Adds new blog posts to the database if the user has user rights.
  */
 include(__DIR__.'/config.php');
 
@@ -19,6 +19,8 @@ $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
 
 $message = null;
 $db = new Database($origo['database']);
+$blogAdminForm = new BlogAdminForm($db);
+
 if ($save && isset($acronym)) {
     $user = new User($db);
     $author = $user->getAcronym();
@@ -27,8 +29,6 @@ if ($save && isset($acronym)) {
     $message = $content->createContent($params);
     $origo['debug'] = $db->Dump();
 }
-
-$blogAdminForm = new BlogAdminForm($db);
 
 $origo['title'] = "Lägg till nyheter i databasen";
 $origo['stylesheets'][] = 'css/form.css';

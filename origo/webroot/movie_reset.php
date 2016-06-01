@@ -1,22 +1,27 @@
 <?php
 /**
- * This is a Origo pagecontroller to reset the content for movies.
+ * This is a Origo pagecontroller to reset the movie database.
  *
- * Contains reports of each section of the course OOPHP.
+ * Handles reset of the movie database via a form. Only users that
+ * have admin rights (logged in as admin) are allowed to reset tge movie
+ * database.
  */
 include(__DIR__.'/config.php');
 
-$reset = isset($_POST['reset']) ? true : false;
+// Get parameters
+$reset      = isset($_POST['reset']) ? true : false;
+$acronym    = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
+
+$db = new Database($origo['database']);
+$movieAdminForm = new MovieAdminForm();
 
 $message = null;
-if ($reset) {
-    $db = new Database($origo['database']);
+if ($reset && isset($acronym) && (strcmp($acronym , 'admin') === 0)) {
+
     $movieContent = new MovieContent($db);
     $message = $movieContent->resetContent();
     $origo['debug'] = $db->Dump();
 }
-
-$movieAdminForm = new MovieAdminForm();
 
 
 $origo['title'] = "Återställ databasen för filmer";

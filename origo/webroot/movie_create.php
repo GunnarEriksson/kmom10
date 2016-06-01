@@ -2,7 +2,9 @@
 /**
  * This is a Origo pagecontroller to add movies to the database.
  *
- * Contains reports of each section of the course OOPHP.
+ * Handles adding of movies to the database via a form. Only users that
+ * have admin rights (logged in as admin) are allowed to add movies in the
+ * database.
  */
 include(__DIR__.'/config.php');
 
@@ -24,16 +26,16 @@ $genre   = isset($_POST['genre'])  ? $_POST['genre'] : null;
 $save   = isset($_POST['save'])  ? true : false;
 $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
 
-$message = null;
 $db = new Database($origo['database']);
+$MovieAdminForm = new MovieAdminForm($db);
+
+$message = null;
 if ($save && isset($acronym) && (strcmp($acronym , 'admin') === 0)) {
     $movieContent = new MovieContent($db);
     $params = array($title, $director, $length, $year, $plot, $image, $subtext, $speech, $quality, $format, $price, $imdb, $youtube);
     $message = $movieContent->addNewFilmToDb($params, $genre);
     $origo['debug'] = $db->Dump();
 }
-
-$MovieAdminForm = new MovieAdminForm($db);
 
 $origo['title'] = "Lägg till ny film i databasen";
 $origo['stylesheets'][] = 'css/form.css';

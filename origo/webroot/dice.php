@@ -2,10 +2,38 @@
 /**
  * This is a Origo pagecontroller for the dice game page.
  *
- * Contains reports of each section of the course OOPHP.
+ * Handles the game DICE 100. Controls the rolling of the dice and the calculating
+ * of the result. If the player has admin rights, the final score can be saved
+ * to a scoreboard.
  */
-// Include the essential config-file which also creates the $origo variable with its defaults.
 include(__DIR__.'/config.php');
+
+define("MIN_NUM_OF_ROWS", "5");
+
+/**
+ * Save score to scoreboard.
+ *
+ * Saves the score to scoreboard if the user has user rights. Returns a message
+ * of the result to save the score to scoreboard.
+ *
+ * @param  DiceScoreboard $diceScoreBoard the dice scoreboard object.
+ * @param  string $acronym the acronym of the player.
+ * @param  string $name the name of the player.
+ * @param  int $points the final score for the player.
+ *
+ * @return string a message if the saving of score was successful or not.
+ */
+function saveScoreToScoreBoard($diceScoreBoard, $acronym, $name, $points)
+{
+    if (isset($acronym) && isset($name) && isset($points)) {
+        $params = array($acronym, $name, $points);
+        $message = $diceScoreBoard->saveScoreToScoreboard($params);
+    } else {
+        $message = null;
+    }
+
+    return null;
+}
 
 // Get parameters
 $acronym  = isset($_POST['acronym']) ? $_POST['acronym'] : null;
@@ -39,16 +67,14 @@ if ($shouldSaveScore) {
 
 $db = new Database($origo['database']);
 $diceScoreBoard = new DiceScoreBoard($db, $diceLogic);
-$message = null;
-if (isset($acronym) && isset($name) && isset($points)) {
-    $params = array($acronym, $name, $points);
-    $message = $diceScoreBoard->saveScoreToScoreboard($params);
-}
-$res = $diceScoreBoard->getScoreBoardResults(5);
+$message = saveScoreToScoreBoard($diceScoreBoard, $acronym, $name, $points);
+
+
+$res = $diceScoreBoard->getScoreBoardResults(MIN_NUM_OF_ROWS);
 $saveScoreButton = $diceScoreBoard->generateSaveScoreButton($message);
 
 $htmlTable = new HTMLTable();
-$scoreBoard = $htmlTable->generateScoreboardTable($res, 5);
+$scoreBoard = $htmlTable->generateScoreboardTable($res, MIN_NUM_OF_ROWS);
 
 // Do it and store it all in variables in the Origo container.
 $origo['title'] = "Tävling";

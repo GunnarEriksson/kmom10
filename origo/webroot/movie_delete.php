@@ -1,14 +1,14 @@
 <?php
 /**
- * This is a Origo pagecontroller to delete a page or a blog post.
+ * This is a Origo pagecontroller to delete movies in the database.
  *
- * Contains reports of each section of the course OOPHP.
+ * Handles removal of movies in the database via a form. Only users that
+ * have admin rights (logged in as admin) are allowed to remove movies in the
+ * database.
  */
 include(__DIR__.'/config.php');
 
-$db = new Database($origo['database']);
-$content = new Content($db);
-
+// Get parameters
 $id      = isset($_POST['id'])      ? strip_tags($_POST['id']) : (isset($_GET['id']) ? strip_tags($_GET['id']) : null);
 $genre   = isset($_POST['genre'])  ? $_POST['genre'] : null;
 $delete  = isset($_POST['delete'])  ? true : false;
@@ -16,9 +16,11 @@ $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
 
 is_numeric($id) or die('Check: Id must be numeric.');
 
+$db = new Database($origo['database']);
+$MovieAdminForm = new MovieAdminForm($db);
+
 $message = null;
 $res = null;
-$db = new Database($origo['database']);
 if (isset($acronym) && (strcmp($acronym , 'admin') === 0)) {
     if ($delete) {
         $movieContent = new MovieContent($db);
@@ -32,8 +34,6 @@ if (isset($acronym) && (strcmp($acronym , 'admin') === 0)) {
 
     $origo['debug'] = $db->Dump();
 }
-
-$MovieAdminForm = new MovieAdminForm($db);
 
 $origo['title'] = "Ta bort film från databas";
 $origo['stylesheets'][] = 'css/form.css';

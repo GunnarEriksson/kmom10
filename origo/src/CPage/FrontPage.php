@@ -31,11 +31,11 @@ class FrontPage
      *
      * @return html the movie section.
      */
-    public function generateMovieSections($parameters, $imageSpec=null, $class=null)
+    public function generateHtmlTagsForMovieItems($parameters, $imageSpec=null, $class=null)
     {
         $res = $this->getMovies($parameters);
 
-        return $this->createMovieSections($res, $imageSpec, $class);
+        return $this->createHtmlTagsForMovieItems($res, $imageSpec, $class);
     }
 
     /**
@@ -55,10 +55,10 @@ class FrontPage
     }
 
     /**
-     * Creates a movie section.
+     * Creates html tags for movie items.
      *
-     * Creates a movie section of movie images and the movies title. Reference is
-     * included.
+     * Creates html tags for movie images and related movie titles. Reference
+     * to get more information about the movie is included.
      *
      * @param  [] $res          the result of movies from the database.
      * @param  [] $imageSpec    the image specifications (height, width etc)
@@ -66,7 +66,7 @@ class FrontPage
      *
      * @return html the movie section.
      */
-    private function createMovieSections($res, $imageSpec, $class)
+    private function createHtmlTagsForMovieItems($res, $imageSpec, $class)
     {
         $html = null;
         foreach ($res as $key => $row) {

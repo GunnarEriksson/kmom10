@@ -5,12 +5,8 @@
  * Contains a short presentation of the company.
  *
  */
-
-// Include the essential config-file which also creates the $origo variable with its defaults.
 include(__DIR__.'/config.php');
 
-
-// Do it and store it all in variables in the Origo container.
 $origo['title'] = "Om RM";
 
 $origo['main'] = <<<EOD

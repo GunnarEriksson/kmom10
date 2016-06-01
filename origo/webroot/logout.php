@@ -33,5 +33,5 @@ $origo['main'] = <<<EOD
 </form>
 EOD;
 
- // Finally, leave it all to the rendering phase of Origo.
- include(ORIGO_THEME_PATH);
+// Finally, leave it all to the rendering phase of Origo.
+include(ORIGO_THEME_PATH);

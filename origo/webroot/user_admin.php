@@ -1,8 +1,16 @@
 <?php
 /**
- * This is a Origo pagecontroller for the movie page.
+ * This is a Origo pagecontroller for the user admin page.
  *
- * Contains reports of each section of the course OOPHP.
+ * Handles the presentations of the user profiles. The user profiles are shown
+ * in a table which has support for paging and sortning the user profiles.
+ *
+ * If the user has user rights (has logged in and is not admin), the user can
+ * update user profiles created by the user.
+ *
+ * If the user has admin rights (logged in as admin), the user can edit all
+ * user profiles and delete all user profiles except the admin profile.
+ * The administrator can not edit the administrator acronym and name.
  */
  include(__DIR__.'/config.php');
 

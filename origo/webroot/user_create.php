@@ -2,7 +2,8 @@
 /**
  * This is a Origo pagecontroller to add new users to the database.
  *
- * Contains reports of each section of the course OOPHP.
+ * Creates and add a new user profile to the database. Used by users that will
+ * be a member of the Rental Movie to be able to rent movies.
  */
 include(__DIR__.'/config.php');
 

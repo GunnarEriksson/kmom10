@@ -9,29 +9,96 @@
 // Include the essential config-file which also creates the $origo variable with its defaults.
 include(__DIR__.'/config.php');
 
+/**
+ * Generates three movie items for new movies.
+ *
+ * Creates three movie items for the latest added movies in the database. The movie
+ * items consists of an image for the move, the move title and an link to a
+ * page to get more information about the moive.
+ *
+ * @param  FrontPage $frontPage the front page object.
+ *
+ * @return html HTML tags for the three latest added movies.
+ */
+function generateNewMovieItems($frontPage)
+{
+    $parameters = array('hits' => 3, 'page' => 1, 'orderby' => 'published', 'order' => 'desc');
+    $newMovies = $frontPage->generateHtmlTagsForMovieItems($parameters, null, "new-movie");
+
+    return $newMovies;
+}
+
+/**
+ * Generates the last rented movie item.
+ *
+ * Creates movie items for the last rented movie in the database. The movie
+ * items consists of an image for the move, the move title and an link to a
+ * page to get more information about the moive.
+ *
+ * @param  FrontPage $frontPage the front page object.
+ *
+ * @return html HTML tags for the last rented movies.
+ */
+function generateLastRentedMovieItem($frontPage)
+{
+    $image = array('width' => 119, 'height' => 170, 'sharpen' => true);
+    $parameters = array('hits' => 1, 'page' => 1, 'orderby' => 'rented', 'order' => 'desc');
+    $lastRented = $frontPage->generateHtmlTagsForMovieItems($parameters, $image, "sidebar-movie");
+
+    return $lastRented;
+}
+
+/**
+ * Generates the most rented movie item.
+ *
+ * Creates movie items for the most rented movie in the database. The movie
+ * items consists of an image for the move, the move title and an link to a
+ * page to get more information about the moive.
+ *
+ * @param  FrontPage $frontPage the front page object.
+ *
+ * @return html HTML tags for the most rented movies.
+ */
+function generateMostRentedMovieItem($frontPage)
+{
+    $image = array('width' => 119, 'height' => 170, 'sharpen' => true);
+    $parameters = array('hits' => 1, 'page' => 1, 'orderby' => 'rents', 'order' => 'desc');
+    $mostRented = $frontPage->generateHtmlTagsForMovieItems($parameters, $image, "sidebar-movie");
+
+    return $mostRented;
+}
+
+/**
+ * Gets blog post.
+ *
+ * Gets three last news blog posts from the database.
+ *
+ * @param  Database $db the database object.
+ *
+ * @return html the three last news blog posts.
+ */
+function getLastAddedBlogPosts($db)
+{
+    $textFilter = new TextFilter();
+    $blog = new Blog($db);
+    $parameters = array('slug' => null, 'hits' => 3,
+        'page' => 1,
+        'category' => null
+    );
+
+    $blogs = $blog->getBlogPostsFromSlug($parameters, $textFilter);
+
+    return $blogs;
+}
+
 $db = new Database($origo['database']);
-
-$parameters = array('hits' => 3, 'page' => 1, 'orderby' => 'published', 'order' => 'desc');
 $frontPage = new FrontPage($db);
-$newMovies = $frontPage->generateMovieSections($parameters, null, "new-movie");
 
+$newMovies = generateNewMovieItems($frontPage);
 $genres = $frontPage->generateGenresList();
-
-$image = array('width' => 119, 'height' => 170, 'sharpen' => true);
-$parameters = array('hits' => 1, 'page' => 1, 'orderby' => 'rented', 'order' => 'desc');
-$lastRented = $frontPage->generateMovieSections($parameters, $image, "sidebar-movie");
-
-$parameters = array('hits' => 1, 'page' => 1, 'orderby' => 'rents', 'order' => 'desc');
-$mostRented = $frontPage->generateMovieSections($parameters, $image, "sidebar-movie");
-
-$textFilter = new TextFilter();
-$blog = new Blog($db);
-$parameters = array('slug' => null, 'hits' => 3,
-    'page' => 1,
-    'category' => null
-);
-$blogs = $blog->getBlogPostsFromSlug($parameters, $textFilter);
-
+$lastRented = generateLastRentedMovieItem($frontPage);
+$mostRented = generateMostRentedMovieItem($frontPage);
+$blogs = getLastAddedBlogPosts($db);
 
 
 // Do it and store it all in variables in the Origo container.

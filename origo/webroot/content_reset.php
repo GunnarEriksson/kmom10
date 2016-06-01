@@ -2,22 +2,38 @@
 /**
  * This is a Origo pagecontroller to reset the content for news blog posts
  *
- * Contains reports of each section of the course OOPHP.
+ * If user has admin rights (logged in as admin), the blog posts in database
+ * is reset to the default values.
  */
 include(__DIR__.'/config.php');
 
-$reset = isset($_POST['reset']) ? true : false;
-
-$message = null;
-if ($reset) {
+/**
+ * Resets database.
+ *
+ * Gets a connection with the database and sends a request to content to
+ * reset content in the database. Returns a message of the result.
+ *
+ * @return a message of the result to reset content in the database.
+ */
+function resetDb()
+{
     $db = new Database($origo['database']);
     $content = new Content($db);
     $message = $content->resetContentInDb();
     $origo['debug'] = $db->Dump();
+
+    return $message;
 }
+
+$reset = isset($_POST['reset']) ? true : false;
+$acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
 
 $blogAdminForm = new BlogAdminForm();
 
+$message = null;
+if ($reset && isset($acronym) && (strcmp($acronym , 'admin') === 0) {
+    $message = resetDb();
+}
 
 $origo['title'] = "Återställ databasen för nyheter";
 $origo['stylesheets'][] = 'css/form.css';

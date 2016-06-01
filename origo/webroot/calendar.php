@@ -1,10 +1,9 @@
 <?php
 /**
- * This is a Origo pagecontroller for the dice game page.
+ * This is a Origo pagecontroller for the calendar page.
  *
- * Contains reports of each section of the course OOPHP.
+ * Contains a calendar view per month with a picture of the movie of the month.
  */
-// Include the essential config-file which also creates the $origo variable with its defaults.
 include(__DIR__.'/config.php');
 
 if(empty($_GET)) {

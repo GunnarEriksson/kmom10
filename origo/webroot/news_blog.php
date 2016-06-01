@@ -2,11 +2,63 @@
 /**
  * This is a Origo pagecontroller to show news blog posts from database.
  *
- * Contains reports of each section of the course OOPHP.
+ * Handles the presentation of news blog post(s). The presentation has support
+ * for breadcrumb navigation and paging, where the user can chose how many
+ * blog posts should be shown per page.
+ *
+ * If a user has logged in, the user can create new blog posts and edit blog post
+ * the user has created.
+ *
+ * If user has admin rights, the user can create, edit and delete all blog posts.
  */
 include(__DIR__.'/config.php');
 
 define('NEWS_BLOG_PATH', __DIR__ . DIRECTORY_SEPARATOR . 'news_blog');
+
+/**
+ * Generates page hits bar.
+ *
+ * Generate a page hits bar with the functions show how many hits the search
+ * gave and a possibilty to chose how many blog post items should be shown
+ * per page. Possible number of blog post to show per page is 2, 4 or 8.
+ *
+ * @param  Blog $blog   the blog object.
+ * @param  HTMLTable    $htmlTable the HTML table object.
+ * @param  int $hits    the number of choosen hits (2, 4 or 8).
+ *
+ * @return html the page hits bar.
+ */
+function generatePageHitsBar($blog, $htmlTable, $hits)
+{
+    $row = $blog->getNumberOfBlogs();
+    $hitsPerPage = $htmlTable->getHitsPerPage(array(2, 4, 8), $hits);
+    $tableHits =<<<EOD
+        <div class='table-hits'>{$row} träffar. {$hitsPerPage}</div>
+EOD;
+
+    return $tableHits;
+}
+
+/**
+ * Generates breadcrumb navigation.
+ *
+ * Creates a breadcrumb navigation list.
+ *
+ * @param  Database $db     the database object.
+ * @param  int $id          the id of the moive.
+ * @param  string $genre    the movie genre.
+ * @param  [] $menu         the navigation bar menus from the config file.
+ *
+ * @return html the breadcrumb navigation list.
+ */
+ function generateBreadcrumbNavigation($db, $parameters, $menu)
+ {
+     $pathParams = array('slug' => $parameters['slug'], 'category' => $parameters['category']);
+     $breadcrumb = new Breadcrumb($db, NEWS_BLOG_PATH, $pathParams, $menu);
+     $breadcrumbNav = $breadcrumb->createNewsBlogBreadcrumb();
+
+     return $breadcrumbNav;
+ }
 
 // Get parameters
 $slug   = isset($_GET['slug'])  ? $_GET['slug']  : null;
@@ -32,15 +84,12 @@ $blogs = $blog->getBlogPostsFromSlug($parameters, $textFilter, $category);
 
 $adminNewsBlogsForm = null;
 $newsBlogCategories = null;
-$tableHits = null;
+$tableHitsBar = null;
 $navigatePageBar = null;
 if (!isset($slug)) {
     $row = $blog->getNumberOfBlogs();
     $htmlTable = new HTMLTable();
-    $hitsPerPage = $htmlTable->getHitsPerPage(array(2, 4, 8), $hits);
-    $tableHits =<<<EOD
-        <div class='table-hits'>{$row} träffar. {$hitsPerPage}</div>
-EOD;
+    $tableHitsBar = generatePageHitsBar($blog, $htmlTable, $hits);
 
     $newsBlogCategories = $blog->createNewsBlogCategoryForm();
     $navigatePageBar = $htmlTable->getPageNavigationBar($hits, $page, $blog->getMaxNumPages());
@@ -48,9 +97,7 @@ EOD;
     $adminNewsBlogsForm = $blogAdminForm->generateNewsBlogsAdminForm();
 }
 
-$pathParams = array('slug' => $slug, 'category' => $category);
-$breadcrumb = new Breadcrumb($db, NEWS_BLOG_PATH, $pathParams, $menu);
-$breadcrumbNav = $breadcrumb->createNewsBlogBreadcrumb();
+$breadcrumbNav = generateBreadcrumbNavigation($db, $parameters, $menu);
 
 
 $origo['title'] = "Nyheter";
@@ -61,17 +108,15 @@ $origo['stylesheets'][] = 'css/breadcrumb.css';
 $origo['debug'] = $db->Dump();
 
 $origo['main'] = <<<EOD
-<section>
 {$breadcrumbNav}
 <h1>{$origo['title']}</h1>
 <div class='news-blog-table'>
     {$adminNewsBlogsForm}
     {$newsBlogCategories}
-    {$tableHits}
+    {$tableHitsBar}
 </div>
 {$blogs}
 {$navigatePageBar}
-</section>
 EOD;
 
 // Finally, leave it all to the rendering phase of Origo.

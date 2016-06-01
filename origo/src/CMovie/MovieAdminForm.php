@@ -400,6 +400,8 @@ EOD;
             } else {
                 $message = "Det uppstod ett problem när du försökte hyra filmen. Var vänlig försök igen!";
             }
+        } else {
+            $message = "Du måste logga in för att hyra en film!";
         }
 
 
@@ -415,7 +417,7 @@ EOD;
      * @param  string $message the result of the rent.
      *
      * @return html the rent a movie form.
-     */ 
+     */
     private function createRentForm($params, $message)
     {
         $rents = $params['rents'] + 1;

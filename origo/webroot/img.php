@@ -2,6 +2,9 @@
 /**
  * This is a PHP skript to process images using PHP GD.
  *
+ * Handles the process and output of an image. It is possible to specify a
+ * number of parameters to process the image.
+ *
  */
 
 // Ensure error reporting is on
@@ -11,6 +14,7 @@ ini_set('output_buffering', 0);   // Do not buffer outputs, write directly
 
 include('../src/CImage/Image.php');
 
+// Get parameters
 $src = isset($_GET['src']) ? $_GET['src'] : null;
 $params['verbose'] = isset($_GET['verbose']) ? true : null;
 $params['saveAs'] = isset($_GET['save-as']) ? $_GET['save-as'] : null;
