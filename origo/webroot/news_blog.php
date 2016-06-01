@@ -28,10 +28,10 @@ define('NEWS_BLOG_PATH', __DIR__ . DIRECTORY_SEPARATOR . 'news_blog');
  *
  * @return html the page hits bar.
  */
-function generatePageHitsBar($blog, $htmlTable, $hits)
+function generatePageHitsBar($blog, $paging, $hits)
 {
     $row = $blog->getNumberOfBlogs();
-    $hitsPerPage = $htmlTable->getHitsPerPage(array(2, 4, 8), $hits);
+    $hitsPerPage = $paging->getHitsPerPage(array(2, 4, 8), $hits);
     $tableHits =<<<EOD
         <div class='table-hits'>{$row} träffar. {$hitsPerPage}</div>
 EOD;
@@ -88,11 +88,11 @@ $tableHitsBar = null;
 $navigatePageBar = null;
 if (!isset($slug)) {
     $row = $blog->getNumberOfBlogs();
-    $htmlTable = new HTMLTable();
-    $tableHitsBar = generatePageHitsBar($blog, $htmlTable, $hits);
+    $paging = new Paging();
+    $tableHitsBar = generatePageHitsBar($blog, $paging, $hits);
 
     $newsBlogCategories = $blog->createNewsBlogCategoryForm();
-    $navigatePageBar = $htmlTable->getPageNavigationBar($hits, $page, $blog->getMaxNumPages());
+    $navigatePageBar = $paging->getPageNavigationBar($hits, $page, $blog->getMaxNumPages());
     $blogAdminForm = new BlogAdminForm();
     $adminNewsBlogsForm = $blogAdminForm->generateNewsBlogsAdminForm();
 }

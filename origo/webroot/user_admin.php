@@ -42,9 +42,11 @@ $userSearch = new UserSearch($db, $parameters);
 $res = $userSearch->searchUser();
 $userSearchForm = $userSearch->generateUserSearchForm();
 
+$paging = new Paging();
+$hitsPerPage = $paging->getHitsPerPage(array(2, 4, 8), $hits);
+$navigatePageBar = $paging->getPageNavigationBar($hits, $page, $userSearch->getMaxNumPages());
+
 $htmlTable = new HTMLTable();
-$hitsPerPage = $htmlTable->getHitsPerPage(array(2, 4, 8), $hits);
-$navigatePageBar = $htmlTable->getPageNavigationBar($hits, $page, $userSearch->getMaxNumPages());
 $userTable = $htmlTable->generateUserTable($res, $navigatePageBar);
 $row = $userSearch->getNumberOfRows();
 

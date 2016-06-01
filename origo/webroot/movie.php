@@ -171,9 +171,11 @@ if ($id) {
 
     $movieSearchForm = $movieSearch->getMovieSearchForm();
 
+    $paging = new Paging();
+    $hitsPerPage = $paging->getHitsPerPage(array(2, 4, 8), $hits);
+    $navigatePageBar = $paging->getPageNavigationBar($hits, $page, $movieSearch->getMaxNumPages());
+
     $htmlTable = new HTMLTable();
-    $hitsPerPage = $htmlTable->getHitsPerPage(array(2, 4, 8), $hits);
-    $navigatePageBar = $htmlTable->getPageNavigationBar($hits, $page, $movieSearch->getMaxNumPages());
     $movieTable = $htmlTable->generateMovieTable($res, $navigatePageBar, $genre);
     $row = $movieSearch->getNumberOfRows();
 
