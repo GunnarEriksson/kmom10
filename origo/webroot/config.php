@@ -172,7 +172,7 @@ $menu = array(
                     ),
 
                     // Account menu item of the submenu
-                    'item 1'  => array(
+                    'item 2'  => array(
                         'text'  => 'Konton',
                         'url'   => 'user_admin.php',
                         'title' => 'Konton'

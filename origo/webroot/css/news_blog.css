@@ -192,3 +192,15 @@
      margin-right: 20px;
      margin-top: 4px;
 }
+
+@media (max-width: 500px) {
+    .blogpost .float-left {
+        display: block;
+        float: none;
+    }
+
+    .blogpost .float-right {
+        display: block;
+        float: none;
+    }
+}

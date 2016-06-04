@@ -117,10 +117,10 @@ EOD;
      *                         you must be logged in as admin to add new films
      *                         to database.
      */
-    public function createAddMovieToDbForm($title, $message, $params=null)
+    public function createAddMovieToDbForm($title, $message, $fileUploadMessage, $params=null)
     {
         if ($this->isAdminMode()) {
-            $output = $this->createMovieForm($title, $message);
+            $output = $this->createMovieForm($title, $message, $fileUploadMessage);
         } else {
             $output = "<p>Du måste vara inloggad som admin för lägga till filmer i databasen!</p>";
         }
@@ -139,13 +139,14 @@ EOD;
      *
      * @return html            the movie form.
      */
-    private function createMovieForm($title, $message, $params=null)
+    private function createMovieForm($title, $message, $fileUploadMessage, $params=null)
     {
         $output = <<<EOD
-        <form method=post>
+        <form method='post' enctype='multipart/form-data'>
             <fieldset>
                 <legend>{$title}</legend>
                 <input type='hidden' name='id' value="{$params['id']}"/>
+                <input type='hidden' name='image' value="{$params['image']}"/>
                 <input type='hidden' name='published' value="{$params['published']}"/>
                 <input type='hidden' name='rented' value="{$params['rented']}"/>
                 <input type='hidden' name='rents' value="{$params['rents']}"/>
@@ -153,10 +154,10 @@ EOD;
                 <p><label>Regissör:<br/><input type='text' name='director' value="{$params['director']}"/></label></p>
                 <p><label>Längd:<br/><input type='text' name='length' value="{$params['length']}"/></label></p>
                 <p><label>År:<br/><input type='text' name='year' value="{$params['year']}"/></label></p>
-                <p><label>Bildlänk:<br/><input type='text' name='image' value="{$params['image']}"/></label></p>
+                <p><label>Bild:<br><input type='file' name='image'></label></p>
                 <p><label>Text:<br/><input type='text' name='subtext' value="{$params['subtext']}"/></label></p>
                 <p><label>Språk:<br/><input type='text' name='speech' value="{$params['speech']}"/></label></p>
-                <p><label>Kvantitet:<br/><input type='text' name='quality' value="{$params['quality']}"/></label></p>
+                <p><label>Kvalitet:<br/><input type='text' name='quality' value="{$params['quality']}"/></label></p>
                 <p><label>Format:<br/><input type='text' name='format' value="{$params['format']}"/></label></p>
                 <p><label>Pris:<br/><input type='text' name='price' value="{$params['price']}"/></label></p>
                 <p><label>Länk Imdb:<br/><input type='text' name='imdb' value="{$params['imdb']}"/></label></p>
@@ -166,7 +167,8 @@ EOD;
                     {$this->generateCheckGenresCheckBoxes($params['genre'])}
                 </p>
                 <p><input type='submit' name='save' value='Spara'/></p>
-                <output>{$message}</output>
+                <output>{$message}</output><br/>
+                <output>{$fileUploadMessage}</output>
             </fieldset>
         </form>
 EOD;
@@ -263,12 +265,12 @@ EOD;
      *                         error message if the film was not found or the
      *                         user is not logged in as admin.
      */
-    public function createEditMovieInDbForm($title, $res, $message)
+    public function createEditMovieInDbForm($title, $res, $message, $fileUploadMessage)
     {
         if ($this->isAdminMode()) {
             $params = $this->getParameterFromFilmWithIdFromDb($res);
             if (isset($params)) {
-                $output = $this->createMovieForm($title, $message, $params);
+                $output = $this->createMovieForm($title, $message, $fileUploadMessage, $params);
             } else {
                 $output = "<p>Felaktigt id! Det finns inget film med sådant id i databasen!</p>";
             }
@@ -400,10 +402,7 @@ EOD;
             } else {
                 $message = "Det uppstod ett problem när du försökte hyra filmen. Var vänlig försök igen!";
             }
-        } else {
-            $message = "Du måste logga in för att hyra en film!";
         }
-
 
         return $message;
     }

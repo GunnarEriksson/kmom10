@@ -71,7 +71,7 @@ class MovieContentView
         }
 
         $MovieContentView .= "</h2>";
-        $MovieContentView .= "<img class='movie-info-img' src='img.php?src=" . htmlentities($this->parameters['image']) . "' alt='" . htmlentities($this->parameters['title']) . "'/>";
+        $MovieContentView .= "<img class='movie-info-img' src='img.php?src=" . htmlentities($this->parameters['image']) . "&amp;width=200&amp;height=280&amp;sharpen' alt='" . htmlentities($this->parameters['title']) . "'/>";
         $MovieContentView .= "<span class='movie-plot'>" . htmlentities($this->parameters['plot']) . "</span>";
         $MovieContentView .= "</div>";
         $MovieContentView .= $this->createMovieInfoList();
@@ -79,6 +79,8 @@ class MovieContentView
 
         if ($this->isUserMode()) {
             $MovieContentView .= $rentButton;
+        } else {
+            $MovieContentView .= "<p>Du måste vara inloggad för att hyra film";
         }
 
         $MovieContentView .= "</article>";

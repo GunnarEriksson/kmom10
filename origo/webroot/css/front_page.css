@@ -1,10 +1,11 @@
 .sidbar {
     float: left;
-    width: 15%;
+    width: 20%;
 }
 
 .sidbar h2 {
     background: #b50000;
+    border-radius: 5px;
     color: #fff;
     margin: 0;
     padding: 3px 0 3px 10px;
@@ -16,7 +17,7 @@
 
 .main-container {
     float: right;
-    width: 82%;
+    width: 75%;
 }
 
 .main-container h2 {
@@ -31,7 +32,8 @@
     overflow: auto;
 }
 
-.new-movies, .news h2 {
+.new-movies > h2, .news > h2 {
+    border-radius: 5px;
     text-align: left;
 }
 
@@ -54,7 +56,7 @@
 
  .genres li {
      background: #b50000;
-     border-radius: 5px;
+     border-radius: 9px;
      margin-bottom: .3em;
      margin-left: .3em;
      padding: .1em;
@@ -86,4 +88,45 @@
  .news .blogpost {
      margin-left: 10px;
      margin-right: 10px;
+ }
+
+ /**
+  * Responsive layout
+  */
+  @media (max-width: 750px) {
+      .main-container {
+          width: 70%;
+      }
+
+      .sidbar {
+          width: 25%;
+      }
+
+      .genres {
+          width: 95%;
+      }
+
+      .genres li {
+          width: 90%;
+      }
+  }
+
+ @media (max-width: 650px) {
+     .main-container {
+         float: none;
+         width: 100%;
+     }
+
+     .sidbar {
+         float: none;
+         width: 100%;
+     }
+
+     .genres {
+         width: 95%;
+     }
+
+     .genres li {
+         width: 100%;
+     }
  }

@@ -183,6 +183,7 @@ function getSearchMovieTitleForm()
         <input type="search" name="title" value="" placeholder="Ange filmtitel">
         <input type="submit" value="Sök">
     </form>
+    <div class="clear-float"></div>
 EOD;
 
     return $searchMovieTitleForm;

@@ -22,8 +22,9 @@ include(__DIR__.'/config.php');
  */
 function generateNewMovieItems($frontPage)
 {
+    $image = array('width' => 200, 'height' => 280, 'sharpen' => false);
     $parameters = array('hits' => 3, 'page' => 1, 'orderby' => 'published', 'order' => 'desc');
-    $newMovies = $frontPage->generateHtmlTagsForMovieItems($parameters, null, "new-movie");
+    $newMovies = $frontPage->generateHtmlTagsForMovieItems($parameters, $image, "new-movie");
 
     return $newMovies;
 }

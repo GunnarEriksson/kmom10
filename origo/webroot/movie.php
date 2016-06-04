@@ -117,12 +117,13 @@ $hits     = isset($_GET['hits'])  ? $_GET['hits']  : 8;
 $page     = isset($_GET['page'])  ? $_GET['page']  : 1;
 $year1    = isset($_GET['year1']) && !empty($_GET['year1']) ? $_GET['year1'] : null;
 $year2    = isset($_GET['year2']) && !empty($_GET['year2']) ? $_GET['year2'] : null;
-$orderby  = isset($_GET['orderby']) ? strtolower($_GET['orderby']) : 'id';
-$order    = isset($_GET['order'])   ? strtolower($_GET['order'])   : 'asc';
+$orderby  = isset($_GET['orderby']) ? strtolower($_GET['orderby']) : 'published';
+$order    = isset($_GET['order'])   ? strtolower($_GET['order'])   : 'desc';
 $genre    = isset($_GET['genre']) ? $_GET['genre'] : null;
 $result   = isset($_GET['result'])  ? $_GET['result'] : null;
 $substringChar = isset($_GET['substring'])  ? $_GET['substring'] : null;
 $path = isset($_GET['path']) ? $_GET['path'] : null;
+
 
 // Increase the possibility to get a match when the search for movie
 // comes from the header search.

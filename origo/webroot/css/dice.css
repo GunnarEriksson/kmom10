@@ -13,6 +13,7 @@
 
 .game h2, .scoreboard h2 {
     background: #b50000;
+    border-radius: 5px;
     color: #fff;
     margin: 0;
     padding: 3px 0 3px 10px;
@@ -145,4 +146,20 @@ input[type="submit"] {
 .save-button
 input[type="submit"]:hover {
     color: #f5a06e;
+}
+
+/**
+ * Responsive layout
+ */
+@media (max-width: 580px) {
+    .game {
+        float: none;
+        width: 100%;
+    }
+
+    .scoreboard {
+        float: none;
+        margin-top: 50px;
+        width: 100%;
+    }
 }
