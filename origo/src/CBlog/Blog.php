@@ -247,7 +247,11 @@ class Blog
                 $status = "Skapad: {$created}";
             }
 
-            $data   = $textFilter->doFilter(htmlentities($blog->data, null, 'UTF-8'), $blog->filter);
+            try {
+                $data   = $textFilter->doFilter(htmlentities($blog->data, null, 'UTF-8'), $blog->filter);
+            } catch (Exception $error) {
+                $data   = $error->getMessage();
+            }
 
             $readMore = null;
             if (!$this->parameters['slug']) {

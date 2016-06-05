@@ -27,16 +27,20 @@ class TextFilter
             'smartypants' => 'smartyPantsTypographer',
             'htmlpurify'  => 'htmlPurifier',
         );
-        // Make an array of the comma separated string $filters
-        $filter = preg_replace('/\s/', '', explode(',', $filters));
-        // For each filter, call its function with the $text as parameter.
-        foreach ($filter as $key) {
-            if (isset($callbacks[$key])) {
-                $text = call_user_func_array(array($this, $callbacks[$key]), array($text));
-            } else {
-                throw new Exception("The filter '$filters' is not a valid filter string. Its the key '$key' that is unknown and it does not match a valid callback.");
+
+        if (isset($filters) && !empty($filters)) {
+            // Make an array of the comma separated string $filters
+            $filter = preg_replace('/\s/', '', explode(',', $filters));
+            // For each filter, call its function with the $text as parameter.
+            foreach ($filter as $key) {
+                if (isset($callbacks[$key])) {
+                    $text = call_user_func_array(array($this, $callbacks[$key]), array($text));
+                } else {
+                    throw new Exception("The filter '$filters' is not a valid filter string. Its the key '$key' that is unknown and it does not match a valid callback.");
+                }
             }
         }
+
         return $text;
     }
     /**
@@ -231,7 +235,7 @@ EOD;
      * audited, secure yet permissive whitelist, it will also make sure your
      * documents are standards compliant, something only achievable with a
      * comprehensive knowledge of W3C's specifications.
-     * 
+     *
      * @param  string $text string $text text to be purified.
      * @return string the purified text.
      */

@@ -15,20 +15,25 @@ $email = isset($_POST['email']) ? $_POST['email'] : null;
 $password = isset($_POST['password']) ? $_POST['password'] : null;
 $save  = isset($_POST['save'])  ? true : false;
 
-$formParams = array(
-    'acronym' => htmlentities($acronym, null, 'UTF-8'),
-    'name' => htmlentities($name, null, 'UTF-8'),
-    'info' => htmlentities($info, null, 'UTF-8'),
-    'email' => htmlentities($email, null, 'UTF-8'),
-);
+$db = new Database($origo['database']);
+$userContent = new UserContent($db);
 
 $message = null;
 if ($save) {
-    $db = new Database($origo['database']);
-    $userContent = new UserContent($db);
     $params = array($acronym, $name, $info, $email, $password);
     $message = $userContent->addNewUserToDb($params);
     $origo['debug'] = $db->Dump();
+}
+
+// Erase form parameters when content is created successfully;
+$formParams = null;
+if (!$userContent->isContentCreated()) {
+    $formParams = array(
+        'acronym' => htmlentities($acronym, null, 'UTF-8'),
+        'name' => htmlentities($name, null, 'UTF-8'),
+        'info' => htmlentities($info, null, 'UTF-8'),
+        'email' => htmlentities($email, null, 'UTF-8'),
+    );
 }
 
 $userAdminForm = new UserAdminForm();

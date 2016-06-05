@@ -9,6 +9,7 @@ class UserContent
     const ERROR_DUPLICATE_KEY = 1062;
 
     private $db;
+    private $isContentCreatedSuccessfully;
 
     /**
      * Constructor
@@ -20,6 +21,7 @@ class UserContent
     public function __construct($db)
     {
         $this->db = $db;
+        $this->isContentCreatedSuccessfully = false;
     }
 
     /**
@@ -34,6 +36,7 @@ class UserContent
      */
     public function addNewUserToDb($params)
     {
+        $this->isContentCreatedSuccessfully = false;
         $message = $this->checkMandatoryParameters($params);
 
         if (!isset($message)) {
@@ -98,6 +101,7 @@ class UserContent
             $resPassword = $this->createPassword($acronym, $password);
             if ($resPassword) {
                 $message = 'Välkommen till Rental Movies. Du kan nu logga in med ditt id och lösenord.';
+                $this->isContentCreatedSuccessfully = true;
             } else {
                 $message = 'Konto kunde ej skapas. Lösenord kunde inte skapas!<br><pre>' . print_r($this->db->ErrorInfo(), 1) . '</pre>';
             }
@@ -135,6 +139,16 @@ class UserContent
         ';
 
         return $this->db->ExecuteQuery($sql, $passwordParams);
+    }
+
+    /**
+     * Checks if the content has been created in the database.
+     *
+     * @return boolean true if content has been created in db, false otherwise;
+     */
+    public function isContentCreated()
+    {
+        return $this->isContentCreatedSuccessfully;
     }
 
     /**

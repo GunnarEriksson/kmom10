@@ -6,6 +6,7 @@
 class Content
 {
     private $db;
+    private $isContentSuccessfullyCreated;
 
     /**
      * Constructor
@@ -15,6 +16,7 @@ class Content
     public function __construct($db)
     {
         $this->db = $db;
+        $this->isContentSuccessfullyCreated = false;
     }
 
     /**
@@ -141,6 +143,7 @@ EOD;
 
     public function createContent($params)
     {
+        $this->isContentSuccessfullyCreated = false;
         $message = $this->checkMandatoryParameters($params);
 
         if (!isset($message)) {
@@ -177,9 +180,9 @@ EOD;
     }
 
     /**
-     * Helper function to check if the format and date is correct.
-     * Checks if the format of the date is correct and the date has correct
-     * values.
+     * Helper function to check if the format and date/ date time is correct.
+     * Checks if the format of the date / date time is correct and the date
+     * has correct values.
      *
      * @param  [] $params the content parameters.
      * @return string a message if the date is correct, null otherwise.
@@ -191,11 +194,19 @@ EOD;
 
         if (!empty($published)) {
             $date = DateTime::createFromFormat('Y-m-d', $published);
-            if (!$date) {
-                $message = "Felaktigt format på datum!";
+            $dateTime = DateTime::createFromFormat('Y-m-d H:i:s', $published);
+
+            if (!$date && !$dateTime) {
+                $message = "Felaktigt format på datum (Y-m-d) / tidsstämpel (Y-m-d H:i:s)!";
             } else {
-                if ($date->format('Y-m-d') !== $published) {
-                    $message = "Felaktigt datum!";
+                if ($date) {
+                    if ($date->format('Y-m-d') !== $published) {
+                        $message = "Felaktigt datum!";
+                    }
+                } else if ($dateTime) {
+                    if ($dateTime->format('Y-m-d H:i:s') !== $published) {
+                        $message = "Felaktigt tidstämpel.!";
+                    }
                 }
             }
         }
@@ -214,8 +225,9 @@ EOD;
      */
     private function createContentInDb($params)
     {
+        $titleWithTimeStamp = $this->addTimeStampToTitle($params[0]);
         // Set slug to a slugified title
-        $params[1] = $this->slugify($params[0]);
+        $params[1] = $this->slugify($titleWithTimeStamp);
 
         if (strcmp($params[4], "post") === 0) {
             $params[2] = null; // Set url to null for blog posts.
@@ -237,11 +249,45 @@ EOD;
 
         if ($res) {
             $output = 'Informationen sparades.';
+            $this->isContentSuccessfullyCreated = true;
         } else {
             $output = 'Informationen sparades EJ.<br><pre>' . print_r($this->db->ErrorInfo(), 1) . '</pre>';
         }
 
         return $output;
+    }
+
+    /**
+     * Helper function to add time stamp to a title.
+     *
+     * Adds actual time stamp to a title. The time zone is Europe / Stockholm.
+     *
+     * @param string $title the title and time (Europe / Stockholm)
+     */
+    private function addTimeStampToTitle($title)
+    {
+        date_default_timezone_set('Europe/Stockholm');
+        $title .= "-";
+        $title .= date("H:i:s");
+
+        return $title;
+    }
+
+    /**
+     * Helper function to create a slug of a string, to be used as url.
+     *
+     * @param  string $str the string to format as slug.
+     *
+     * @return str the formatted slug.
+     */
+    private function slugify($str)
+    {
+        $str = mb_strtolower(trim($str));
+        $str = str_replace(array('å','ä','ö'), array('a','a','o'), $str);
+        $str = preg_replace('/[^a-z0-9-]/', '-', $str);
+        $str = trim(preg_replace('/-+/', '-', $str), '-');
+
+        return $str;
     }
 
     /**
@@ -263,21 +309,9 @@ EOD;
         return $date;
     }
 
-    /**
-     * Helper function to create a slug of a string, to be used as url.
-     *
-     * @param  string $str the string to format as slug.
-     *
-     * @return str the formatted slug.
-     */
-    private function slugify($str)
+    public function isContentCreated()
     {
-        $str = mb_strtolower(trim($str));
-        $str = str_replace(array('å','ä','ö'), array('a','a','o'), $str);
-        $str = preg_replace('/[^a-z0-9-]/', '-', $str);
-        $str = trim(preg_replace('/-+/', '-', $str), '-');
-
-        return $str;
+        return $this->isContentSuccessfullyCreated;
     }
 
     public function updateContent($params)
@@ -322,8 +356,9 @@ EOD;
                 id = ?
         ';
 
-        // Slugify title
-        $params[1] = $this->slugify($params[0]);
+        $titleWithTimeStamp = $this->addTimeStampToTitle($params[0]);
+        // Set slug to a slugified title
+        $params[1] = $this->slugify($titleWithTimeStamp);
 
         // Convert filters from array to string
         if (!empty($params[5])) {

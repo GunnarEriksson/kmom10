@@ -41,7 +41,7 @@ class FileUploader
     public function uploadImage($file)
     {
         $filePath = null;
-        if (isset($file)) {
+        if (isset($file) && !empty($file['name'])) {
             $fileName = $file['name'];
             $fileTmp = $file['tmp_name'];
             $fileSize = $file['size'];
@@ -68,6 +68,8 @@ class FileUploader
             } else {
                 throw new UnexpectedValueException('Problem med flytt av fil från tillfällig katalog');
             }
+        } else {
+            throw new UnexpectedValueException('Bild saknas!');
         }
 
         return $filePath;

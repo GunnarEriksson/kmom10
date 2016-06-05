@@ -43,7 +43,7 @@ function uploadImage($file)
  * folders.
  *
  * @param  [] $imagePath the path and name for the image.
- * 
+ *
  * @return string the path and name of the image with the root image folder removed.
  */
 function getImagePathUsedInDb($imagePath)
@@ -60,6 +60,7 @@ $title  = isset($_POST['title']) ? $_POST['title'] : null;
 $director = isset($_POST['director']) ? $_POST['director'] : null;
 $length = isset($_POST['length']) ? $_POST['length'] : null;
 $year = isset($_POST['year']) ? $_POST['year'] : null;
+$image = isset($_POST['image']) ? $_POST['image'] : null;
 $subtext = isset($_POST['subtext']) ? $_POST['subtext'] : null;
 $speech = isset($_POST['speech']) ? $_POST['speech'] : null;
 $quality = isset($_POST['quality']) ? $_POST['quality'] : null;
@@ -75,6 +76,7 @@ $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
 
 $db = new Database($origo['database']);
 $MovieAdminForm = new MovieAdminForm($db);
+$movieContent = new MovieContent($db);
 
 $message = null;
 $fileUploadMessage = null;
@@ -87,10 +89,30 @@ if ($save && isset($acronym) && (strcmp($acronym , 'admin') === 0)) {
         $fileUploadMessage = $error->getMessage();
     }
 
-    $movieContent = new MovieContent($db);
     $params = array($title, $director, $length, $year, $plot, $image, $subtext, $speech, $quality, $format, $price, $imdb, $youtube);
     $message = $movieContent->addNewFilmToDb($params, $genre);
     $origo['debug'] = $db->Dump();
+}
+
+// Erase form parameters when content is created successfully;
+$formParams = null;
+if (!$movieContent->isMoiveAdded()) {
+    $formParams = array(
+    'title' => $title,
+    'director' => $director,
+    'length' => $length,
+    'year' => $year,
+    'image' => $image,
+    'subtext' => $subtext,
+    'speech' => $speech,
+    'quality' => $quality,
+    'format' => $format,
+    'price' => $price,
+    'imdb' => $imdb,
+    'youtube' => $youtube,
+    'plot' => $plot,
+    'genre' => $genre
+    );
 }
 
 $origo['title'] = "Lägg till ny film i databasen";
@@ -99,7 +121,7 @@ $origo['stylesheets'][] = 'css/form.css';
 // Header
 $origo['main'] = <<<EOD
 <h1>{$origo['title']}</h1>
-{$MovieAdminForm->createAddMovieToDbForm($origo['title'], $message, $fileUploadMessage)}
+{$MovieAdminForm->createAddMovieToDbForm($origo['title'], $message, $fileUploadMessage, $formParams)}
 EOD;
 
 // Finally, leave it all to the rendering phase of Origo.

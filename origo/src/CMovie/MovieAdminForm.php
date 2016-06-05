@@ -120,12 +120,59 @@ EOD;
     public function createAddMovieToDbForm($title, $message, $fileUploadMessage, $params=null)
     {
         if ($this->isAdminMode()) {
-            $output = $this->createMovieForm($title, $message, $fileUploadMessage);
+            $params = $this->getParameterFromCreateMovieForm($params);
+            $output = $this->createMovieForm($title, $message, $fileUploadMessage, $params);
         } else {
             $output = "<p>Du måste vara inloggad som admin för lägga till filmer i databasen!</p>";
         }
 
         return $output;
+    }
+
+    /**
+     * Helper function to clean create movie form values.
+     *
+     * Cleans values with the htmlentities function before the values are inserted
+     * in the form. Sets not used parameters in create content, to null.
+     * Parameters that are created by the code, is not cleaned.
+     *
+     * @param  [] $res the values for the forms.
+     *
+     * @return [] the cleaned values for the forms.
+     */
+    private function getParameterFromCreateMovieForm($res)
+    {
+        $params = null;
+        if (isset($res) && !empty($res)) {
+            if (!empty($res['genre'])) {
+                $genre = implode(",", $res['genre']);
+            } else {
+                $genre = null;
+            }
+
+            $params = array(
+                'id' => null,
+                'title' => htmlentities($res['title'], null, 'UTF-8'),
+                'director' => htmlentities($res['director'], null, 'UTF-8'),
+                'length' => htmlentities($res['length'], null, 'UTF-8'),
+                'year' => htmlentities($res['year'], null, 'UTF-8'),
+                'image' => $res['image'],
+                'subtext' => htmlentities($res['subtext'], null, 'UTF-8'),
+                'speech' => htmlentities($res['speech'], null, 'UTF-8'),
+                'quality' => htmlentities($res['quality'], null, 'UTF-8'),
+                'format' => htmlentities($res['format'], null, 'UTF-8'),
+                'price' => htmlentities($res['price'], null, 'UTF-8'),
+                'imdb' => htmlentities($res['imdb'], null, 'UTF-8'),
+                'youtube' => htmlentities($res['youtube'], null, 'UTF-8'),
+                'plot' => htmlentities($res['plot'], null, 'UTF-8'),
+                'genre' => $res['genre'],
+                'published' => null,
+                'rented' => null,
+                'rents' => null,
+            );
+        }
+
+        return $params;
     }
 
     /**

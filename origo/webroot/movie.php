@@ -166,10 +166,6 @@ if ($id) {
 
     $movieSearch = new MovieSearch($db, $parameters);
     $res = $movieSearch->searchMovie();
-    if ($movieSearch->getNumberOfRows() == 1) {
-        $id = $movieSearch->getIdForFirstMovie($res);
-    }
-
     $movieSearchForm = $movieSearch->getMovieSearchForm();
 
     $paging = new Paging();

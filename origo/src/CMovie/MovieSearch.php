@@ -330,25 +330,4 @@ class MovieSearch
 
         return $title;
     }
-
-    /**
-     * Get the id for the first movie in the result from database.
-     *
-     * Returns the id for the first id from the result from the database.
-     *
-     * @param  [] $res the result from the database.
-     *
-     * @return int the id for the first movie in the result from database, null
-     *             otherwise.
-     */
-    public function getIdForFirstMovie($res)
-    {
-        $id = null;
-
-        if (isset($res) && !empty($res)) {
-            $id = $res[0]->id;
-        }
-
-        return $id;
-    }
 }

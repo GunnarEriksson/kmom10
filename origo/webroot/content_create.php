@@ -17,25 +17,29 @@ $published = isset($_POST['published']) && !empty($_POST['published']) ? strip_t
 $save   = isset($_POST['save'])  ? true : false;
 $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
 
-$formParams = array(
-    'title' => $title,
-    'data' => $data,
-    'category' => $category,
-    'filter' => $filter,
-    'published' => $published
-);
-
 $message = null;
 $db = new Database($origo['database']);
 $blogAdminForm = new BlogAdminForm($db);
+$content = new Content($db);
 
 if ($save && isset($acronym)) {
     $user = new User($db);
     $author = $user->getAcronym();
     $params = array($title, null, null, $data, $type, $filter, $author, $category, $published);
-    $content = new Content($db);
     $message = $content->createContent($params);
     $origo['debug'] = $db->Dump();
+}
+
+// Erase form parameters when content is created successfully;
+$formParams = null;
+if (!$content->isContentCreated()) {
+    $formParams = array(
+        'title' => $title,
+        'data' => $data,
+        'category' => $category,
+        'filter' => $filter,
+        'published' => $published
+    );
 }
 
 $origo['title'] = "Lägg till nyheter i databasen";

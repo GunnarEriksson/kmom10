@@ -8,6 +8,7 @@ class MovieContent
     private $db;
     private $lastInsertedId;
     private $genreValues;
+    private $isMovieCreatedSuccessfully;
 
     /**
      * Constructor
@@ -20,6 +21,7 @@ class MovieContent
     {
         $this->db = $db;
         $this->lastInsertedId = null;
+        $this->isMovieCreatedSuccessfully = false;
         $this->genreValues = $this->createGenreConversionArray();
     }
 
@@ -42,8 +44,8 @@ class MovieContent
 
         $genreToNumMappingArray = array();
         foreach ($res as $key => $row) {
-            $name = htmlentities($row->name);
-            $id = htmlentities($row->id);
+            $name = $row->name;
+            $id = $row->id;
             $genreToNumMappingArray[$name] = $id;
         }
 
@@ -309,8 +311,86 @@ EOD;
         return $this->db->executeQuery($sql);
     }
 
+    public function addNewFilmToDb($params, $genres)
+    {
+        $this->isMovieCreatedSuccessfully = false;
+        $message = $this->checkMandatoryParameters($params, $genres);
+
+        if (!isset($message)) {
+            $message = $this->checkNumericParameters($params);
+        }
+
+        if (!isset($message)) {
+            $message = $this->addNewMovie($params, $genres);
+        }
+
+        return $message;
+
+    }
+
     /**
-     * Adds a film to the database.
+     * Helper functio to check mandatory parameters.
+     *
+     * Checks if title, plot, year and genre is missing. If one or more mandatory
+     * parameters are missing, a message is returned about the problem. Otherwise
+     * null is returned.
+     *
+     * @param  [] $params movie parameters.
+     *
+     * @return string at success, null is returned. Otherwise a message with the
+     *                problem is returned.
+     */
+    private function checkMandatoryParameters($params, $genres)
+    {
+        if (empty($params[0])) {
+            $message = 'Titel saknas!';
+        } else if (empty($params[3])) {
+            $message = 'År saknas!';
+        } else if (empty($params[4])) {
+            $message = 'Handling saknas!';
+        } else {
+            $message = null;
+        }
+
+        if (!isset($message)) {
+            if (!isset($genres)) {
+                $message = 'Genre saknas!';
+            }
+        }
+
+        return $message;
+    }
+
+    /**
+     * Helper function to check numeric parameters.
+     *
+     * Checks the numeric parameters lenght, year and price. Returns a message
+     * if one or more is not numeric.
+     *
+     * @param  [] $params movie parameters.
+     *
+     * @return string returns null at success, otherwise a message with the
+     *                        fault is returned.
+     */
+    private function checkNumericParameters($params)
+    {
+        if (!is_numeric($params[2])) {
+            $message = 'Längd måste vara av numerisk typ!';
+        } else if (!is_numeric($params[3])) {
+            $message = 'År måste vara av numerisk typ!';
+        } else if (strlen($params[3]) !== 4) {
+            $message = 'År måste bestå av fyra siffror!';
+        } else if (!is_numeric($params[10])) {
+            $message = 'Pris måste vara av numerisk typ!';
+        } else {
+            $message = null;
+        }
+
+        return $message;
+    }
+
+    /**
+     * Helper function to add a film to the database.
      *
      * Adds a film to the database and returns a message if the film was added
      * or not.
@@ -320,7 +400,7 @@ EOD;
      *
      * @return string the messeage if the film was added or not.
      */
-    public function addNewFilmToDb($params, $genres)
+    private function addNewMovie($params, $genres)
     {
         $sql = '
             INSERT INTO Rm_Movie (title, director, length, year, plot, image, subtext, speech, quality, format, price, imdb, youtube, published, rented)
@@ -366,6 +446,7 @@ EOD;
 
             if ($res) {
                 $message = 'Informationen sparades.';
+                $this->isMovieCreatedSuccessfully = true;
             } else {
                 $message = 'Informationen sparades EJ, kunde binda genre till filmen';
             }
@@ -427,7 +508,38 @@ EOD;
      *
      * @return string       the result of the operation was successful or not.
      */
+    public function isMoiveAdded()
+    {
+        return $this->isMovieCreatedSuccessfully;
+    }
+
     public function editFilmInDb($params, $genres)
+    {
+        $message = $this->checkMandatoryParameters($params, $genres);
+
+        if (!isset($message)) {
+            $message = $this->checkNumericParameters($params);
+        }
+
+        if (!isset($message)) {
+            $message = $this->editMovieInDb($params, $genres);
+        }
+
+        return $message;
+    }
+
+    /**
+     * Helper function to edit a film in the database.
+     *
+     * Edits a film in the database and returns a message if the operation was
+     * successful or not.
+     *
+     * @param  [] $params   the details of the movie.
+     * @param  [] $genres   the genres that should be connected to the movie.
+     *
+     * @return string       the result of the operation was successful or not.
+     */
+    private function editMovieInDb($params, $genres)
     {
         $sql = '
             UPDATE Rm_Movie SET

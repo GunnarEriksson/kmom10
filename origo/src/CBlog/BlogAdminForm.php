@@ -158,7 +158,7 @@ EOD;
     {
         if ($this->isUserMode()) {
             $params = $this->getParameterFromCreateNewsForm($params);
-            $output = $this->createNewsBlogForm($title, $message, $params);
+            $output = $this->createNewsBlogForm($title, $message, $params, true);
         } else {
             $output = "<p>Du måste vara inloggad för lägga till nyheter i databasen!</p>";
         }
@@ -179,14 +179,14 @@ EOD;
      */
     private function getParameterFromCreateNewsForm($res)
     {
-        if (!empty($res['filter'])) {
-            $filter = implode(",", $res['filter']);
-        } else {
-            $filter = null;
-        }
-
         $params = null;
         if (isset($res) && !empty($res)) {
+            if (!empty($res['filter'])) {
+                $filter = implode(",", $res['filter']);
+            } else {
+                $filter = null;
+            }
+
             $params = array(
                 'id' => null,
                 'title' => htmlentities($res['title'], null, 'UTF-8'),
@@ -213,12 +213,9 @@ EOD;
      *                          after adding or editing a blog post. Default null.
      * @return html             the form to add new or edit blog posts.
      */
-    private function createNewsBlogForm($title, $message, $params=null)
+    private function createNewsBlogForm($title, $message, $params=null, $isCreate=false)
     {
-        $readonly = null;
-        if (isset($params['published']) && !empty($params['published'])) {
-            $readonly = "readonly";
-        }
+        $readonly = $this->preventPublishedBeUpdatedAtEdit($params, $isCreate);
 
         $output = <<<EOD
         <form method=post>
@@ -244,6 +241,30 @@ EOD;
         </form>
 EOD;
         return $output;
+    }
+
+    /**
+     * Helper function to prevent published to be update at edit of content.
+     *
+     * Checks if the operation is a create or edit. If the operation is to
+     * edit the content, it sets readonly if the published parameter exists to
+     * prevent if the parameter is already set when edit the content.
+     *
+     * @param [] $params            the content parameters.
+     * @param  boolean $isCreate    true if the operation is a create, false otherwise.
+     *
+     * @return string  readonly if prevent the published field, null otherwise.
+     */
+    private function preventPublishedBeUpdatedAtEdit($params, $isCreate)
+    {
+        $readonly = null;
+        if (!$isCreate) {
+            if (isset($params['published']) && !empty($params['published'])) {
+                $readonly = "readonly";
+            }
+        }
+
+        return $readonly;
     }
 
     /**
