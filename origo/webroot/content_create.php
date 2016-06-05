@@ -17,6 +17,14 @@ $published = isset($_POST['published']) && !empty($_POST['published']) ? strip_t
 $save   = isset($_POST['save'])  ? true : false;
 $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
 
+$formParams = array(
+    'title' => $title,
+    'data' => $data,
+    'category' => $category,
+    'filter' => $filter,
+    'published' => $published
+);
+
 $message = null;
 $db = new Database($origo['database']);
 $blogAdminForm = new BlogAdminForm($db);
@@ -36,7 +44,7 @@ $origo['stylesheets'][] = 'css/form.css';
 // Header
 $origo['main'] = <<<EOD
 <h1>{$origo['title']}</h1>
-{$blogAdminForm->createNewsBlogToDbForm($origo['title'], $message)}
+{$blogAdminForm->createNewsBlogToDbForm($origo['title'], $message, $formParams)}
 EOD;
 
 // Finally, leave it all to the rendering phase of Origo.

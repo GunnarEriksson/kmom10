@@ -139,6 +139,70 @@ EOD;
         return $this->db->executeQuery($sql);
     }
 
+    public function createContent($params)
+    {
+        $message = $this->checkMandatoryParameters($params);
+
+        if (!isset($message)) {
+            $message = $this->checkDate($params);
+        }
+
+        if (!isset($message)) {
+            $message = $this->createContentInDb($params);
+        }
+
+        return $message;
+    }
+
+    /**
+     * Helper function to check mandatory parameters are included.
+     *
+     * Checks if title and text are included. If not a message is returned.
+     *
+     * @param  [] $params the content parameters.
+     *
+     * @return string a message that a mandatory parameter is missing, null otherwise.
+     */
+    private function checkMandatoryParameters($params)
+    {
+        if (empty($params[0])) {
+            $message = 'Titel saknas!';
+        } else if (empty($params[3])) {
+            $message = 'Text saknas!';
+        } else {
+            $message = null;
+        }
+
+        return $message;
+    }
+
+    /**
+     * Helper function to check if the format and date is correct.
+     * Checks if the format of the date is correct and the date has correct
+     * values.
+     *
+     * @param  [] $params the content parameters.
+     * @return string a message if the date is correct, null otherwise.
+     */
+    private function checkDate($params)
+    {
+        $message = null;
+        $published = $params[8];
+
+        if (!empty($published)) {
+            $date = DateTime::createFromFormat('Y-m-d', $published);
+            if (!$date) {
+                $message = "Felaktigt format på datum!";
+            } else {
+                if ($date->format('Y-m-d') !== $published) {
+                    $message = "Felaktigt datum!";
+                }
+            }
+        }
+
+        return $message;
+    }
+
     /**
      * Creates new content.
      *
@@ -148,7 +212,7 @@ EOD;
      *
      * @return string the result of creating a new content.
      */
-    public function createContent($params)
+    private function createContentInDb($params)
     {
         // Set slug to a slugified title
         $params[1] = $this->slugify($params[0]);
@@ -214,6 +278,21 @@ EOD;
         $str = trim(preg_replace('/-+/', '-', $str), '-');
 
         return $str;
+    }
+
+    public function updateContent($params)
+    {
+        $message = $this->checkMandatoryParameters($params);
+
+        if (!isset($message)) {
+            $message = $this->checkDate($params);
+        }
+
+        if (!isset($message)) {
+            $message = $this->updateContentInDb($params);
+        }
+
+        return $message;
     }
 
     /**

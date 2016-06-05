@@ -6,16 +6,29 @@
  */
 
 include(__DIR__.'/config.php');
+
+$login = isset($_POST['login']) ? true : false;
+$isUserLoggingIn = isset($_GET['logsIn']) ? true : false;
+
 $db = new Database($origo['database']);
 $user = new User($db);
+$output = null;
 
-// Check if user and password is okey
-if(isset($_POST['login'])) {
-    $user->login($_POST['acronym'], $_POST['password']);
-    header('Location: login.php');
+// Check if user not already logged in and if not, check user and password is okey
+if (!$user->isAuthenticated()) {
+    if($login) {
+        $user->login($_POST['acronym'], $_POST['password']);
+        header('Location: login.php' . '?logsIn');
+    }
+} else {
+    if ($login) {
+        $output .= "Du ÄR redan inloggad. ";
+    }
 }
 
-$output = $user->getUserLoginStatus();
+
+
+$output .= $user->getUserLoginStatus($isUserLoggingIn);
 
  // Do it and store it all in variables in the Origo container.
 $origo['title'] = "Login";

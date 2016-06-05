@@ -30,7 +30,7 @@ $origo['main'] = <<<EOD
 <h1>{$origo['title']}</h1>
 <h2>{$userProfile['name']}</h2>
 <p><strong>Användarnamn</strong><br/>{$userProfile['acronym']}</p>
-<p><strong>Information</strong/><br/>{$userProfile['info']}</p>
+<p><strong>Information</strong><br/>{$userProfile['info']}</p>
 <p><strong>E-post</strong><br/>{$userProfile['email']}</p>
 <p class="small-italic">{$adminInfo}</p>
 <form action="user_edit.php" method=get>

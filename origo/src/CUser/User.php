@@ -103,17 +103,54 @@ class User
     /**
      * Get user login status.
      *
-     * Returns a message about the users login status.
+     * Returns a message about the users login status. If a user has logged
+     * out, a message notice the user that for security the web browser should
+     * be closed.
+     *
+     * @param boolean $hasUserLoggedIn true if a user recently has tried to log
+     *                                 in, false otherwise.
      *
      * @return string the login status for a user.
      */
-    public function getUserLoginStatus()
+    public function getUserLoginStatus($isTryingToLogIn=false)
     {
         if($this->isAuthenticated()) {
           $output = "Du är inloggad som: {$this->acronym} ({$this->name})";
         }
         else {
-          $output = "Du är INTE inloggad.";
+            if ($isTryingToLogIn) {
+                $output = "Inloggning misslyckades. Kontrollera användarnamn och lösenord!";
+            } else {
+                $output = "Du är INTE inloggad.";
+            }
+        }
+
+        return $output;
+    }
+
+    /**
+     * Get user logout status.
+     *
+     * Returns a message about the users logout status. If a user has logged
+     * out, a message notice the user that for security the web browser should
+     * be closed.
+     *
+     * @param boolean $hasUserLoggedOut true if a user recently has logged out,
+     *                                  false otherwise.
+     *
+     * @return string the logout status for a user.
+     */
+    public function getUserLogoutStatus($hasUserLoggedOut=false)
+    {
+        if($this->isAuthenticated()) {
+          $output = "Du är inloggad som: {$this->acronym} ({$this->name})";
+        }
+        else {
+            if ($hasUserLoggedOut) {
+                $output = "Du har loggat ut. Stäng ner webbläsaren som extra säkerhet!";
+            } else {
+                $output = "Du är INTE inloggad.";
+            }
         }
 
         return $output;

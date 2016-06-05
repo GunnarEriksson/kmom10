@@ -13,11 +13,13 @@ include(__DIR__.'/config.php');
  * Gets a connection with the database and sends a request to content to
  * reset content in the database. Returns a message of the result.
  *
+ * @param [] dbConfig the database configuration.
+ *
  * @return a message of the result to reset content in the database.
  */
-function resetDb()
+function resetDb($dbConfig)
 {
-    $db = new Database($origo['database']);
+    $db = new Database($dbConfig);
     $content = new Content($db);
     $message = $content->resetContentInDb();
     $origo['debug'] = $db->Dump();
@@ -31,8 +33,8 @@ $acronym = isset($_SESSION['user']) ? $_SESSION['user']->acronym : null;
 $blogAdminForm = new BlogAdminForm();
 
 $message = null;
-if ($reset && isset($acronym) && (strcmp($acronym , 'admin') === 0) {
-    $message = resetDb();
+if ($reset && isset($acronym) && strcmp($acronym , 'admin') === 0) {
+    $message = resetDb($origo['database']);
 }
 
 $origo['title'] = "Återställ databasen för nyheter";

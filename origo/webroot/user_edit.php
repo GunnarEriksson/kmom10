@@ -23,8 +23,8 @@ is_numeric($id) or die('Check: Id must be numeric.');
 $message = null;
 $res = null;
 if (isset($user)) {
+    $db = new Database($origo['database']);
     if ($save && ((strcmp($user , 'admin') === 0) || (strcmp($user , $acronym) === 0))) {
-        $db = new Database($origo['database']);
         $userContent = new UserContent($db);
         $params = array($acronym, $name, $info, $email, $password, $id);
         $message = $userContent->updateUserInDb($params);

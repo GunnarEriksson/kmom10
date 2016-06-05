@@ -163,7 +163,7 @@ EOD;
                 <p><label>Länk Imdb:<br/><input type='text' name='imdb' value="{$params['imdb']}"/></label></p>
                 <p><label>Länk Youtube:<br/><input type='text' name='youtube' value="{$params['youtube']}"/></label></p>
                 <p><label>Handling:<br/><textarea name='plot'>{$params['plot']}</textarea></label></p>
-                <p><label>Genre (obligatorisk):<br/>
+                <p>Genre (obligatorisk):<br/>
                     {$this->generateCheckGenresCheckBoxes($params['genre'])}
                 </p>
                 <p><input type='submit' name='save' value='Spara'/></p>
@@ -193,9 +193,9 @@ EOD;
         $genres = $this->fetchGenres();
         foreach ($genres as $key => $genre) {
             if ($this->shouldSetBoxBeSet($movieGenre, $genre)) {
-                $checkBox .= "<input type='checkbox' name='genre[]' value='{$genre}' checked='checked' />{$genre} ";
+                $checkBox .= "<label><input type='checkbox' name='genre[]' value='{$genre}' checked='checked' />{$genre}</label>\n";
             } else {
-                $checkBox .= "<input type='checkbox' name='genre[]' value='{$genre}' />{$genre} ";
+                $checkBox .= "<label><input type='checkbox' name='genre[]' value='{$genre}' />{$genre}</label>\n";
             }
         }
 
@@ -349,7 +349,7 @@ EOD;
                 <p><label>År:<br/><input type='text' name='year' value="{$params['year']}" readonly/></label></p>
                 <p><label>Pris:<br/><input type='text' name='price' value="{$params['price']}" readonly/></label></p>
                 <p><label>Handling:<br/><textarea name='plot' readonly>{$params['plot']}</textarea></label></p>
-                <p><label>Genre:<br/>
+                <p>Genre:<br/>
                     {$this->generateCheckGenresCheckBoxes($params['genre'])}
                 </p>
                 <p><input type='submit' name='delete' value='Ta bort'/></p>

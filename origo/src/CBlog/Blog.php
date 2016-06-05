@@ -249,9 +249,10 @@ class Blog
 
             $data   = $textFilter->doFilter(htmlentities($blog->data, null, 'UTF-8'), $blog->filter);
 
+            $readMore = null;
             if (!$this->parameters['slug']) {
                 $data = $this->getSubstring($data, 200);
-                $data .= "<p>" . $this->createLink('Läs mer >>', $blog->slug, $this->parameters['category']) . "</p>";
+                $readMore = $this->createLink('Läs mer >>', $blog->slug, $this->parameters['category']);
             }
 
             $removeButton = null;
@@ -271,6 +272,7 @@ class Blog
                         <h2>{$this->createLink($title, $blog->slug, $this->parameters['category'])}{$removeButton}{$editButton}</h2>
                     </header>
                     <p>{$data}</p>
+                    <p>{$readMore}</p>
                     <footer>
                         <p>
                             <span class='blog-info float-left'>Kategori: {$category}</span>

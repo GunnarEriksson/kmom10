@@ -30,10 +30,10 @@ function setResultParameters($res)
         $res->data,
         $res->type,
         $res->filter,
-        $author,
+        $res->author,
         $res->category,
         $res->updated,
-        $id
+        $res->id
     );
 
     return $params;
@@ -58,8 +58,6 @@ if (isset($acronym)) {
     // Admin can delete all contents and user can delete own contents
     if (isset($res) && ((strcmp($acronym , 'admin') === 0) || (strcmp($acronym , $res->author) === 0))) {
         if ($delete) {
-            $user = new User($db);
-            $author = $user->getAcronym();
             $params = setResultParameters($res);
             $message = $content->deleteContent($params);
 

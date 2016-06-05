@@ -7,7 +7,7 @@
  */
 include(__DIR__.'/config.php');
 
-/ Get parameters
+// Get parameters
 $id     = isset($_POST['id']) ? strip_tags($_POST['id']) : (isset($_GET['id']) ? strip_tags($_GET['id']) : null);
 $acronym  = isset($_POST['acronym']) ? $_POST['acronym'] : null;
 $name = isset($_POST['name']) ? $_POST['name'] : null;
@@ -24,10 +24,10 @@ $userAdminForm = new UserAdminForm();
 $message = null;
 $res = null;
 if (isset($user) && (strcmp($user , 'admin') === 0)) {
+    $db = new Database($origo['database']);
     if ($delete) {
-        $db = new Database($origo['database']);
         $userContent = new UserContent($db);
-        $params = array($acronym, $name, $info, $email, $id);
+        $params = array($id);
         $message = $userContent->deleteUserInDb($params);
     }
 

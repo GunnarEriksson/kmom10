@@ -40,7 +40,7 @@ if (isset($acronym)) {
         $user = new User($db);
         $author = $user->getAcronym();
         $params = array($title, $slug, $url, $data, $type, $filter, $author, $category, $published, $deleted, $id);
-        $message = $content->updateContentInDb($params);
+        $message = $content->updateContent($params);
     }
 
     $res = $content->selectContent(array($id));

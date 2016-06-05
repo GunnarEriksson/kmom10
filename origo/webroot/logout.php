@@ -7,6 +7,8 @@
 
 include(__DIR__.'/config.php');
 
+$hasUserLoggedOut = isset($_GET['logsOut']) ? true : false;
+
 $db = new Database($origo['database']);
 $user = new User($db);
 
@@ -14,10 +16,10 @@ $user = new User($db);
 if(isset($_POST['logout'])) {
   $user->logout();
 
-  header('Location: logout.php');
+  header('Location: logout.php' . '?logsOut');
 }
 
-$output = $user->getUserLoginStatus();
+$output = $user->getUserLogoutStatus($hasUserLoggedOut);
 
 $origo['title'] = "Logout";
 $origo['stylesheets'][] = 'css/form.css';
@@ -27,7 +29,7 @@ $origo['main'] = <<<EOD
 <form method=post>
     <fieldset>
     <legend>{$origo['title']}</legend>
-    <p><input type='submit' name='logout' value='Logout'/></p>
+    <p><input type='submit' name='logout' value='Logga ut'/></p>
     <output><strong>{$output}</strong></output>
     </fieldset>
 </form>

@@ -65,10 +65,14 @@ class UserAdminForm
      */
     private function createUserForm($title, $message, $params, $passwordMessage=null)
     {
-        $readonly = null;
         if ($this->isAdminMode()) {
-            $readonly = "readonly";
+            $readonly = $this->preventAdminChangeAdminAcronym($params);
+        } elseif ($this->isUserMode()) {
+            $readonly = $this->preventUserChangeUserAcronym($params);
+        } else {
+            $readonly = null;
         }
+
 
         $output = <<<EOD
         <form method=post>
@@ -76,7 +80,7 @@ class UserAdminForm
                 <legend>{$title}</legend>
                 <input type='hidden' name='id' value="{$params['id']}"/>
                 <p><label>Användarnamn:<br/><input type='text' name='acronym' value="{$params['acronym']}" {$readonly}/></label></p>
-                <p><label>Namn:<br/><input type='text' name='name' value="{$params['name']}" {$readonly}/></label></p>
+                <p><label>Namn:<br/><input type='text' name='name' value="{$params['name']}" /></label></p>
                 <p><label>Information:<br/><textarea name='info'>{$params['info']}</textarea></label></p>
                 <p><label>E-post:<br/><input type='text' name='email' value="{$params['email']}"/></label></p>
                 <p><label>Lösenord {$passwordMessage}:<br/><input type='password' name='password' value="{$params['password']}"/></label></p>
@@ -87,6 +91,26 @@ class UserAdminForm
 EOD;
 
         return $output;
+    }
+
+    private function preventAdminChangeAdminAcronym($params)
+    {
+        $readonly = null;
+        if ($this->isAdminMode() && strcmp($params['acronym'] , 'admin') === 0) {
+            $readonly = "readonly";
+        }
+
+        return $readonly;
+    }
+
+    private function preventUserChangeUserAcronym($params)
+    {
+        $readonly = null;
+        if ($this->isUserMode() && strcmp($params['acronym'] , 'admin') !== 0) {
+            $readonly = "readonly";
+        }
+
+        return $readonly;
     }
 
     /**
@@ -234,12 +258,9 @@ EOD;
     public function createDeleteUserInDbFrom($title, $res, $message)
     {
         $params = $this->getUserProfileParametersFromDb($res);
+
         if ($this->isAdminMode()) {
-            if (isset($params)) {
-                $output = $this->createDeleteUserForm($title, $message, $params);
-            } else {
-                $output = "<p>Felaktigt id! Det finns inget konto med sådant id i databasen!</p>";
-            }
+            $output = $this->createDeleteUserForm($title, $message, $params);
         } else {
                 $output = "<p>Du har inte rättigheter att radera kontot!</p>";
         }
@@ -255,7 +276,7 @@ EOD;
      * @param  string $title    the title of the form.
      * @param  string $message  the information to a admin.
      * @param  [] $params       the values for the fields in the form.
-     * 
+     *
      * @return html the form to delete users in the database.
      */
     private function createDeleteUserForm($title, $message, $params)

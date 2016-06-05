@@ -480,7 +480,7 @@ class HTMLTable
             $tableBody .= "<td>" . htmlentities($row->email) . "</td>";
             $tableBody .= "<td>" . htmlentities($row->published) . "</td>";
             $tableBody .= "<td>" . htmlentities($row->updated) . "</td>";
-            $tableBody .= "<td><a href='user_edit.php?id="  . htmlentities($row->id) . "'><img class='admin-icon' src='img/icons/edit.png' title='Uppdatera användare alt='Uppdatera' /></a>";
+            $tableBody .= "<td><a href='user_edit.php?id="  . htmlentities($row->id) . "'><img class='admin-icon' src='img/icons/edit.png' title='Uppdatera användare' alt='Uppdatera' /></a>";
             if ($row->acronym !=='admin') {
                 $tableBody .= "<a href='user_delete.php?id=" . htmlentities($row->id) . "'><img class='admin-icon' src='img/icons/delete.png' title='Ta bort användare' alt='Ta_bort' /></a></td>";
             }

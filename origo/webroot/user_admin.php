@@ -20,7 +20,7 @@ $acronym  = isset($_GET['acronym'])  ? $_GET['acronym']  : null;
 $name     = isset($_GET['name'])  ? $_GET['name']  : null;
 $hits     = isset($_GET['hits'])  ? $_GET['hits']  : 8;
 $page     = isset($_GET['page'])  ? $_GET['page']  : 1;
-$orderby  = isset($_GET['orderby']) ? strtolower($_GET['orderby']) : 'id';
+$orderby  = isset($_GET['orderby']) ? strtolower($_GET['orderby']) : 'published';
 $order    = isset($_GET['order'])   ? strtolower($_GET['order'])   : 'asc';
 
 // Check that incoming parameters are valid

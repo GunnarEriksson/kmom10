@@ -75,7 +75,7 @@ class MovieContentView
         $MovieContentView .= "<span class='movie-plot'>" . htmlentities($this->parameters['plot']) . "</span>";
         $MovieContentView .= "</div>";
         $MovieContentView .= $this->createMovieInfoList();
-        $MovieContentView .= "<p><b>Generes: </b>" . htmlentities($this->parameters['genre']) . "</p>";
+        $MovieContentView .= "<p><strong>Generes: </strong>" . htmlentities($this->parameters['genre']) . "</p>";
 
         if ($this->isUserMode()) {
             $MovieContentView .= $rentButton;

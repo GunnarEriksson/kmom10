@@ -134,11 +134,59 @@ class UserContent
             WHERE acronym = ?
         ';
 
-        return $this->db->ExecuteQuery($sql, $passwordParams, true);
+        return $this->db->ExecuteQuery($sql, $passwordParams);
     }
 
     /**
      * Update user profile in database.
+     *
+     * Edits a user in the database and returns a message that the user profile
+     * has been updated. The function handles account could not be updated,
+     * name of user is missing, password could not be updated and acronym
+     * already exists.
+     *
+     * @param [] $params user profile parameters.
+     *
+     * @return a message if an account could be updated or not.
+     */
+    public function updateUserInDb($params)
+    {
+        $message = $this->checkMandatoryUpdateUserParameters($params);
+
+        if (!isset($message)) {
+            $message = $this->updateUser($params);
+        }
+
+        return $message;
+    }
+
+    /**
+     * Helper function to check mandatory parameters when updating a user..
+     *
+     * Checks if acronym, name and password is missing. If one or more mandatory
+     * parameters are missing, a message is returned about the problem. Otherwise
+     * null is returned.
+     *
+     * @param  [] $params user profile parameters.
+     *
+     * @return string at success, null is returned. Otherwise a message with the
+     *                problem is returned.
+     */
+    private function checkMandatoryUpdateUserParameters($params)
+    {
+        if (empty($params[0])) {
+            $message = 'Användarnamn saknas!';
+        } else if (empty($params[1])) {
+            $message = 'Namn saknas!';
+        } else {
+            $message = null;
+        }
+
+        return $message;
+    }
+
+    /**
+     * Helper function to update user profile in database.
      *
      * Edits a user in the database and returns a message that the user profile
      * has been updated. The function handles account could not be updated, password
@@ -148,7 +196,7 @@ class UserContent
      *
      * @return a message if an account could be updated or not.
      */
-    public function updateUserInDb($params)
+    private function updateUser($params)
     {
         // Should password be changed.
         $salt = isset($params[4]) ? ' , salt = UNIX_TIMESTAMP()' : null ;

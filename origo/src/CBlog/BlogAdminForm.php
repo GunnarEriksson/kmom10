@@ -157,12 +157,49 @@ EOD;
     public function createNewsBlogToDbForm($title, $message, $params=null)
     {
         if ($this->isUserMode()) {
-            $output = $this->createNewsBlogForm($title, $message);
+            $params = $this->getParameterFromCreateNewsForm($params);
+            $output = $this->createNewsBlogForm($title, $message, $params);
         } else {
             $output = "<p>Du måste vara inloggad för lägga till nyheter i databasen!</p>";
         }
 
         return $output;
+    }
+
+    /**
+     * Helper function to clean blog form values.
+     *
+     * Cleans values with the htmlentities function before the values are inserted
+     * in the forms. Sets not used parameters in create content, to null.
+     * Parameters that are created by the code, is not cleaned.
+     *
+     * @param  [] $res the values for the forms.
+     *
+     * @return [] the cleaned values for the forms.
+     */
+    private function getParameterFromCreateNewsForm($res)
+    {
+        if (!empty($res['filter'])) {
+            $filter = implode(",", $res['filter']);
+        } else {
+            $filter = null;
+        }
+
+        $params = null;
+        if (isset($res) && !empty($res)) {
+            $params = array(
+                'id' => null,
+                'title' => htmlentities($res['title'], null, 'UTF-8'),
+                'data' => htmlentities($res['data'], null, 'UTF-8'),
+                'filter' => $filter,
+                'author' => null,
+                'category' => $res['category'],
+                'published' => htmlentities($res['published'], null, 'UTF-8'),
+                'deleted' => null
+            );
+        }
+
+        return $params;
     }
 
     /**
@@ -178,6 +215,11 @@ EOD;
      */
     private function createNewsBlogForm($title, $message, $params=null)
     {
+        $readonly = null;
+        if (isset($params['published']) && !empty($params['published'])) {
+            $readonly = "readonly";
+        }
+
         $output = <<<EOD
         <form method=post>
             <fieldset>
@@ -188,14 +230,14 @@ EOD;
                 <input type='hidden' name='deleted' value="{$params['deleted']}"/>
                 <p><label>Titel:<br/><input type='text' name='title' value="{$params['title']}"/></label></p>
                 <p><label>Text:<br/><textarea name='data'>{$params['data']}</textarea></label></p>
-                <p><label>Kategori:<br/>
+                <p>Kategori:<br/>
                     {$this->generateCategoryRadioButtons($params['category'])}
                 </p>
-                <p><label>Filter:<br/>
+                <p>Filter:<br/>
                     {$this->generateFilterTypeCheckBoxes($params['filter'])}
                 </p>
                 <p><label>Publiceringsdatum<br/>(åååå-mm-dd):<br/>
-                    <input type='text' name='published' value="{$params['published']}"/></label></p>
+                    <input type='text' name='published' value="{$params['published']}" {$readonly}/></label></p>
                 <p><input type='submit' name='save' value='Spara'/></p>
                 <output>Meddelande: {$message}</output>
             </fieldset>
@@ -225,9 +267,9 @@ EOD;
 
         foreach ($categories as $key => $category) {
             if (strcmp($category, $newsBlogCategory) === 0) {
-                $radioButtons .= "<input type='radio' name='category' value='{$category}' checked='checked' />{$category} ";
+                $radioButtons .= "<label><input type='radio' name='category' value='{$category}' checked='checked' />{$category}</label>\n";
             } else {
-                $radioButtons .= "<input type='radio' name='category' value='{$category}' />{$category} ";
+                $radioButtons .= "<label><input type='radio' name='category' value='{$category}' />{$category}</label>\n";
             }
         }
 
@@ -252,7 +294,7 @@ EOD;
 
         $categoriesArray = array();
         foreach ($res as $key => $row) {
-            $name = htmlentities($row->name);
+            $name = $row->name;
             $categoriesArray[] = $name;
         }
 
@@ -277,9 +319,9 @@ EOD;
         $filterTypes = $this->fetchFilterTypes();
         foreach ($filterTypes as $key => $filterType) {
             if ($this->shouldSetBoxBeSet($newsBlogFilterType, $filterType)) {
-                $checkBox .= "<input type='checkbox' name='filter[]' value='{$filterType}' checked='checked' />{$filterType} ";
+                $checkBox .= "<label><input type='checkbox' name='filter[]' value='{$filterType}' checked='checked' />{$filterType}</label>\n";
             } else {
-                $checkBox .= "<input type='checkbox' name='filter[]' value='{$filterType}' />{$filterType} ";
+                $checkBox .= "<label><input type='checkbox' name='filter[]' value='{$filterType}' />{$filterType}</label>\n";
             }
         }
 
@@ -370,7 +412,7 @@ EOD;
      * Helper function to clean blog form values.
      *
      * Cleans values with the htmlentities function before the values are inserted
-     * in the forms.
+     * in the forms. Parameters created by program are not cleaned.
      *
      * @param  [] $res the values for the forms.
      * @return [] the cleaned values for the forms.
@@ -386,9 +428,9 @@ EOD;
                 'type' => htmlentities($res->type, null, 'UTF-8'),
                 'title' => htmlentities($res->title, null, 'UTF-8'),
                 'data' => htmlentities($res->data, null, 'UTF-8'),
-                'filter' => htmlentities($res->filter, null, 'UTF-8'),
+                'filter' => $res->filter,
                 'author' => htmlentities($res->author, null, 'UTF-8'),
-                'category' => htmlentities($res->category, null, 'UTF-8'),
+                'category' => $res->category,
                 'published' => htmlentities($res->published, null, 'UTF-8'),
                 'deleted' => htmlentities($res->deleted, null, 'UTF-8')
             );
