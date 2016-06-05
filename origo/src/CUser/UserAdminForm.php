@@ -21,8 +21,10 @@ class UserAdminForm
      */
     public function createAddUserToDbFrom($title, $message, $params=null)
     {
-        $default = $this->createDefaultFormParameters();
-        $params = array_merge($default, $params);
+        if (isset($params)) {
+            $default = $this->createDefaultFormParameters();
+            $params = array_merge($default, $params);
+        }
 
         return $this->createUserForm($title, $message, $params);
     }

@@ -165,7 +165,7 @@ EOD;
                 'imdb' => htmlentities($res['imdb'], null, 'UTF-8'),
                 'youtube' => htmlentities($res['youtube'], null, 'UTF-8'),
                 'plot' => htmlentities($res['plot'], null, 'UTF-8'),
-                'genre' => $res['genre'],
+                'genre' => $genre,
                 'published' => null,
                 'rented' => null,
                 'rents' => null,
